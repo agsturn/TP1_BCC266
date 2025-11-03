@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "RAM.h"
+#include "ram.h"
 
 void teste_ram_vazia() {
     printf("=== TESTE 1: RAM VAZIA ===\n");
@@ -52,4 +52,5 @@ int main() {
     
     printf("\n✅ TODOS OS TESTES CONCLUIDOS!\n");
     return 0;
+
 }

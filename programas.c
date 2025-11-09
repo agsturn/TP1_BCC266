@@ -18,7 +18,7 @@ void programaSubtrai(RAM *ram, CPU *cpu);
 void programaAleatorio(RAM *ram, CPU *cpu, int qdeInstrucoes);
 void programaMultiplica(RAM *ram, CPU *cpu);
 void programaDivide(RAM *ram, CPU *cpu);
-void programaRaizQuadrada(RAM *ram, CPU *cpu);
+void programaRaizQuadrada(RAM *ram, CPU *cpu, int radicando);
 void programaMultiplica2(RAM *ram, CPU *cpu, int multiplicando, int multiplicador);
 void programaDivide2(RAM *ram, CPU *cpu, int dividendo, int divisor);
 void programaRestoDivisao(RAM *ram, CPU *cpu, int dividendo, int divisor);
@@ -44,14 +44,17 @@ int main() {
     //Executa um exemplo de divisao
     //programaDivide(&ram,&cpu);
 
+    //Executa um exemplo de raíz quadrada
+    programaRaizQuadrada(&ram, &cpu, 25);
+
     //Outro programa de multiplicação 
-    //programaMultiplica2(&ram, &cpu, 12, 5);
+    //programaMultiplica2(&ram, &cpu, 19, 23);
 
     //Outro programa de divisao
-    programaDivide2(&ram, &cpu, 101, 10);
+    //programaDivide2(&ram, &cpu, 101, 10);
 
     //Calcula resto de divisão
-    programaRestoDivisao(&ram, &cpu, 101, 10);
+    //programaRestoDivisao(&ram, &cpu, 101, 10);
 
     free(ram.memoria);
 
@@ -197,6 +200,23 @@ void programaDivide(RAM *ram, CPU *cpu) {
     iniciar(cpu, ram);
 
     printf("Resultado da divisao: %d\n\n", getDado(ram, 2));
+}
+
+//Calcula a raíz quadrada
+void programaRaizQuadrada(RAM *ram, CPU *cpu, int radicando){
+
+    RAM ram2;
+    criarRAM_vazia(ram, 2);
+    ram->memoria[0] = radicando;
+    cpu->registrador1 = 0;
+
+
+    for(ram->memoria[1] = 1; cpu->registrador1 <= ram->memoria[0]; ram->memoria[1]++){
+        programaMultiplica2(&ram2, cpu, ram->memoria[1], ram->memoria[1]);
+        free(ram2.memoria);
+    }
+    
+    printf("Resultado da raiz quadrada: %d", ram->memoria[1] - 2);
 }
 
 //Programa que multiplica dois números inteiros

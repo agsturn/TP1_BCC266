@@ -18,6 +18,10 @@ void programaSubtrai(RAM *ram, CPU *cpu);
 void programaAleatorio(RAM *ram, CPU *cpu, int qdeInstrucoes);
 void programaMultiplica(RAM *ram, CPU *cpu);
 void programaDivide(RAM *ram, CPU *cpu);
+void programaRaizQuadrada(RAM *ram, CPU *cpu);
+void programaMultiplica2(RAM *ram, CPU *cpu, int multiplicando, int multiplicador);
+void programaDivide2(RAM *ram, CPU *cpu, int dividendo, int divisor);
+void programaRestoDivisao(RAM *ram, CPU *cpu, int dividendo, int divisor);
 
 int main() {
     RAM ram;
@@ -26,19 +30,30 @@ int main() {
     printf("=== Execução dos programas CAVE Language ===\n\n");
 
     // Executa um exemplo de soma simples
-    programaSoma(&ram, &cpu);
+    //programaSoma(&ram, &cpu);
 
     // Executa um exemplo de subtração simples
-    programaSubtrai(&ram, &cpu);
+    //programaSubtrai(&ram, &cpu);
 
     // Executa um programa aleatório
-    // programaAleatorio(&ram, &cpu, 10);
+    //programaAleatorio(&ram, &cpu, 10);
 
     //Executa um exemplo de multiplicacao
     //programaMultiplica(&ram,&cpu);
 
     //Executa um exemplo de divisao
     //programaDivide(&ram,&cpu);
+
+    //Outro programa de multiplicação 
+    //programaMultiplica2(&ram, &cpu, 12, 5);
+
+    //Outro programa de divisao
+    programaDivide2(&ram, &cpu, 101, 10);
+
+    //Calcula resto de divisão
+    programaRestoDivisao(&ram, &cpu, 101, 10);
+
+    free(ram.memoria);
 
     return 0;
 }
@@ -184,5 +199,108 @@ void programaDivide(RAM *ram, CPU *cpu) {
     printf("Resultado da divisao: %d\n\n", getDado(ram, 2));
 }
 
+//Programa que multiplica dois números inteiros
+void programaMultiplica2(RAM *ram, CPU *cpu, int multiplicando, int multiplicador){
+
+    criarRAM_vazia(ram, 2);
+    ram->memoria[0] = 0;
+    ram->memoria[1] = multiplicando;
+
+    Instrucao trecho1[2];
+    Instrucao inst1, inst2;
+
+    inst1.opcode = 0;
+    inst1.add1 = 0;
+    inst1.add2 = 1;
+    inst1.add3 = 0;
+
+    inst2.opcode = -1;
+    inst2.add1 = -1;
+    inst2.add2 = -1;
+    inst2.add3 = -1;
+
+    trecho1[0] = inst1;
+    trecho1[1] = inst2;
+
+    for(int i = 0; i < multiplicador; i++){
+        setPrograma(cpu, trecho1);
+        iniciar(cpu, ram);
+    }
+
+    cpu->registrador1 = ram->memoria[trecho1[0].add1];
+
+    printf("\nResultado da multiplicação: %d\n", cpu->registrador1);
+}
+
+void programaDivide2(RAM *ram, CPU *cpu, int dividendo, int divisor){
+
+    criarRAM_vazia(ram, 3);
+    ram->memoria[0] = dividendo;
+    ram->memoria[1] = divisor;
+    ram->memoria[2] = 0;
+
+    Instrucao trecho1[3];
+    Instrucao inst1, inst2, inst3;
+
+    inst1.opcode = 1;
+    inst1.add1 = 0;
+    inst1.add2 = 1;
+    inst1.add3 = 0;
+
+    inst2.opcode = 0;
+    inst2.add1 = 1;
+    inst2.add2 = 2;
+    inst2.add3 = 2;
+
+    inst3.opcode = -1;
+    inst3.add1 = -1;
+    inst3.add2 = -1;
+    inst3.add3 = -1;
+
+    trecho1[0] = inst1;
+    trecho1[1] = inst2;
+    trecho1[2] = inst3;
+
+    while(ram->memoria[trecho1[0].add1] >= ram->memoria[trecho1[0].add2]){
+        setPrograma(cpu, trecho1);
+        iniciar(cpu, ram);
+    }
+
+    cpu->registrador1 = ram->memoria[trecho1[1].add3];
+    printf("Resultado da divisão: %d", cpu->registrador1);
+
+}
+
+//Programa que divide dois números inteiros
+void programaRestoDivisao(RAM *ram, CPU *cpu, int dividendo, int divisor){
+
+    criarRAM_vazia(ram, 2);
+    ram->memoria[0] = dividendo;
+    ram->memoria[1] = divisor;
+
+    Instrucao trecho1[2];
+    Instrucao inst1, inst2;
+
+    inst1.opcode = 1;
+    inst1.add1 = 0;
+    inst1.add2 = 1;
+    inst1.add3 = 0;
+
+    inst2.opcode = -1;
+    inst2.add1 = -1;
+    inst2.add2 = -1;
+    inst2.add3 = -1;
+
+    trecho1[0] = inst1;
+    trecho1[1] = inst2;
+
+    while(ram->memoria[trecho1[0].add1] >= ram->memoria[trecho1[0].add2]){
+        setPrograma(cpu, trecho1);
+        iniciar(cpu, ram);
+    }
+
+    cpu->registrador1 = ram->memoria[trecho1[0].add1];
+    printf("Resto da divisão: %d", cpu->registrador1);
+}
 
 // Grupo 10 - Otávio Enrique Lopes de Lima,Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes

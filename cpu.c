@@ -3,10 +3,6 @@
 #include "cpu.h"
 #include "ram.h"
 
-void setPrograma(CPU *cpu, Instrucao *programaAux) {
-    cpu->programa = programaAux;
-}
-
 /* OPCODES:
     //-1 -> halt
     // 0 -> soma
@@ -16,6 +12,10 @@ void setPrograma(CPU *cpu, Instrucao *programaAux) {
     // 4 -> salva conteudo externo no registrador
     // 5 -> obtem conteudo externo do registrador
 */
+
+void setPrograma(CPU *cpu, Instrucao *programaAux) {
+    cpu->programa = programaAux;
+}
 
 // Simula a execução das instruções da CPU
 void iniciar(CPU *cpu, RAM *ram) {
@@ -41,20 +41,43 @@ void iniciar(CPU *cpu, RAM *ram) {
                 break;
 
             case 2:
-                if(inst.add1 = 0){
+                if(inst.add1 == 0){
                     setDado(ram, inst.add2, cpu->registrador1);
-                }else if(inst.add1 = 1){
+                    printf("Inst copy_reg_ram -> RAM posicao %d com conteudo %d", inst.add2, cpu->registrador1);
+                }else if(inst.add1 == 1){
                     setDado(ram, inst.add2, cpu->registrador2);
+                    printf("Inst copy_reg_ram -> RAM posicao %d com conteudo %d", inst.add2, cpu->registrador2);
                 }
                 break;
 
             case 3:
-                if(inst.add1 = 0){
+                if(inst.add1 == 0){
                     cpu->registrador1 = getDado(ram, inst.add2);
-                }else if(inst.add1 = 1){
+                    printf("Inst copy_ram_reg -> Registrador1 com conteudo %d", cpu->registrador1);
+                }else if(inst.add1 == 1){
                     cpu->registrador2 = getDado(ram, inst.add2);
+                    printf("Inst copy_ram_reg -> Registrador1 com conteudo %d", cpu->registrador2);
                 }
                 break;
+
+            case 4:
+                if(inst.add1 == 0){
+                    cpu->registrador1 = inst.add2;
+                    printf("Inst copy_ext_reg -> Registrador1 com conteudo %d", cpu->registrador1);
+                }else if(inst.add1 == 1){
+                    cpu->registrador2 = inst.add2;
+                    printf("Inst copy_ext_reg -> Registrador1 com conteudo %d", cpu->registrador2);
+                }
+                break;
+            
+            case 5:
+                if(inst.add1 == 0){
+                    inst.add2 = cpu->registrador1;
+                    printf("Inst obtain_reg -> Registrador1 com conteudo %d", cpu->registrador1);
+                }else if(inst.add1 == 1){
+                    inst.add2 = cpu->registrador2;
+                    printf("Inst obtain_reg -> Registrador1 com conteudo %d", cpu->registrador2);
+                }
 
             default:
                 printf("Opcode desconhecido: %d\n", cpu->opcode);

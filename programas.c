@@ -22,6 +22,9 @@ void programaRaizQuadrada(RAM *ram, CPU *cpu, int radicando);
 void programaMultiplica2(RAM *ram, CPU *cpu, int multiplicando, int multiplicador);
 void programaDivide2(RAM *ram, CPU *cpu, int dividendo, int divisor);
 void programaRestoDivisao(RAM *ram, CPU *cpu, int dividendo, int divisor);
+void programaFatorial(RAM *ram, CPU *cpu, int numero);
+void programaPotencia(RAM *ram, CPU *cpu, int base, int expoente);
+void programaFibonacci(RAM *ram, CPU *cpu, int n);
 
 int main() {
     RAM ram;
@@ -45,7 +48,7 @@ int main() {
     //programaDivide(&ram,&cpu);
 
     //Executa um exemplo de raíz quadrada
-    programaRaizQuadrada(&ram, &cpu, 25);
+    //programaRaizQuadrada(&ram, &cpu, 25);
 
     //Outro programa de multiplicação 
     //programaMultiplica2(&ram, &cpu, 19, 23);
@@ -55,6 +58,16 @@ int main() {
 
     //Calcula resto de divisão
     //programaRestoDivisao(&ram, &cpu, 101, 10);
+
+    //Executa um exemplo de fatorial
+    //programaFatorial(&ram, &cpu, 5);
+
+    //Executa um exemplo de potencia
+   // programaPotencia(&ram,&cpu,3,4);
+
+   //Executa um exemplo de fibonacci
+   programaFibonacci(&ram, &cpu,8);
+
 
     free(ram.memoria);
 
@@ -156,20 +169,22 @@ void programaAleatorio(RAM *ram, CPU *cpu, int qdeInstrucoes) {
 void programaMultiplica(RAM *ram, CPU *cpu) {
     printf("Executando programaMultiplica()...\n");
 
-    criarRAM_vazia(ram, 3);
+   criarRAM_vazia(ram, 3);
+
+    setDado(ram,0,4);//multiplicando
+    setDado(ram,1,3);//multiplicador
+    setDado(ram,2,0);//resultado
 
     Instrucao programa[3];
 
-    // RAM[0] * RAM[1] -> RAM[2]
-    programa[0].opcode = 6;// olhar se pode criar novos opcodes
-    programa[0].add1 = 0;
-    programa[0].add2 = 1;
-    programa[0].add3 = 2;
+    for(int i=0;i<getDado(ram,1);i++){    
+    programa[0].opcode = 0;//soma
+    programa[0].add1 = 2;//acumulador
+    programa[0].add2 = 1;//valor do multiplicando
+    programa[0].add3 = 2;//guarda o resultado
+    }
 
-    programa[1].opcode = -1;
-
-    setDado(ram, 0, 4);
-    setDado(ram, 1, 3);
+    programa[1].opcode = -1;//halt
 
     setPrograma(cpu, programa);
     iniciar(cpu, ram);
@@ -183,21 +198,36 @@ void programaDivide(RAM *ram, CPU *cpu) {
 
     criarRAM_vazia(ram, 3);
 
-    Instrucao programa[3];
+    setDado(ram,0,4);//dividendo
+    setDado(ram,1,3);//divisor
+    setDado(ram,2,0);//quociente
+    setDado(ram,3,0);//resto
 
-    // RAM[0] / RAM[1] -> RAM[2]
-    programa[0].opcode = 7;//olhar isso
-    programa[0].add1 = 0;
-    programa[0].add2 = 1;
-    programa[0].add3 = 2;
+    while (getDado(ram,0)>= getDado(ram,1)){
+        Instrucao subtrai[2];
 
-    programa[1].opcode = -1;
+        subtrai[0].opcode = 1;
+        subtrai[0].add1 = 0;//dividendo
+        subtrai[0].add2 = 1;//divisor
+        subtrai[0].opcode = 0;//resultado
+        subtrai[0].opcode = -1;//halt
+    
+        setPrograma(cpu,subtrai);
+        iniciar(cpu,ram);
 
-    setDado(ram, 0, 12);
-    setDado(ram, 1, 3);
+        //soma 1 ao quociente
+        Instrucao soma[2];
+        soma[0].opcode =0;//soma
+        soma[0].add1 = 2;//quociente
+        soma[0].add2 = 3;//valor 0
+        soma[0].add3 = 2;// guarda em 2
+        soma[1].opcode = -1;
 
-    setPrograma(cpu, programa);
-    iniciar(cpu, ram);
+        setDado(ram,3,1);
+        setPrograma(cpu,soma);
+        iniciar(cpu, ram);
+        setDado(ram,3,0);
+    }
 
     printf("Resultado da divisao: %d\n\n", getDado(ram, 2));
 }
@@ -321,6 +351,149 @@ void programaRestoDivisao(RAM *ram, CPU *cpu, int dividendo, int divisor){
 
     cpu->registrador1 = ram->memoria[trecho1[0].add1];
     printf("Resto da divisão: %d", cpu->registrador1);
+}
+
+// PROGRAMA DE FATORIAL
+void programaFatorial(RAM *ram, CPU *cpu, int numero) {
+
+    printf("Executando programaFatorial(%d)...\n", numero);
+
+    criarRAM_vazia(ram, 4);
+    // RAM[0] = número base
+    // RAM[1] = contador
+    // RAM[2] = resultado parcial
+    // RAM[3] = auxiliar
+
+    setDado(ram, 0, numero); // número
+    setDado(ram, 1, 1);      // contador = 1
+    setDado(ram, 2, 1);      // resultado = 1
+
+    // Enquanto contador <= número
+    while (getDado(ram, 1) <= getDado(ram, 0)) {
+        setDado(ram, 3, 0); // Zera auxiliar
+
+        // Multiplica resultado * contador (por somas sucessivas)
+        for (int i = 0; i < getDado(ram, 1); i++) {
+            Instrucao soma[2];
+            soma[0].opcode = 0;  // soma
+            soma[0].add1 = 3;    // RAM[3] += RAM[2]
+            soma[0].add2 = 2;
+            soma[0].add3 = 3;
+            soma[1].opcode = -1;
+
+            setPrograma(cpu, soma);
+            iniciar(cpu, ram);
+        }
+
+        // Atualiza o resultado com o valor de RAM[3]
+        setDado(ram, 2, getDado(ram, 3));
+
+        // Incrementa contador (contador = contador + 1)
+        Instrucao somaContador[2];
+        somaContador[0].opcode = 0;
+        somaContador[0].add1 = 1; // contador
+        somaContador[0].add2 = 3; // RAM[3] = 1
+        somaContador[0].add3 = 1; // salva contador
+        somaContador[1].opcode = -1;
+
+        setDado(ram, 3, 1); // RAM[3] = 1
+        setPrograma(cpu, somaContador);
+        iniciar(cpu, ram);
+    }
+
+    printf("Fatorial de %d = %d\n", numero, getDado(ram, 2));
+}
+
+//PROGRAMA DE POTENCIA
+// PROGRAMA DE POTÊNCIA
+void programaPotencia(RAM *ram, CPU *cpu, int base, int expoente) {
+
+    printf("Executando programaPotencia(%d, %d)...\n", base, expoente);
+
+    criarRAM_vazia(ram, 4);
+    // RAM[0] = base
+    // RAM[1] = expoente
+    // RAM[2] = resultado parcial
+    // RAM[3] = auxiliar
+
+    setDado(ram, 0, base);
+    setDado(ram, 1, expoente);
+    setDado(ram, 2, 1); // resultado começa em 1
+
+    // Enquanto expoente > 0
+    while (getDado(ram, 1) > 0) {
+        setDado(ram, 3, 0); // limpa auxiliar
+
+        // Multiplica resultado * base (por somas sucessivas)
+        for (int i = 0; i < getDado(ram, 0); i++) {
+            Instrucao soma[2];
+            soma[0].opcode = 0; // soma
+            soma[0].add1 = 3;   // RAM[3] += RAM[2]
+            soma[0].add2 = 2;
+            soma[0].add3 = 3;
+            soma[1].opcode = -1;
+
+            setPrograma(cpu, soma);
+            iniciar(cpu, ram);
+        }
+
+        // Atualiza resultado
+        setDado(ram, 2, getDado(ram, 3));
+
+        // Decrementa expoente (expoente = expoente - 1)
+        Instrucao subtrai[2];
+        subtrai[0].opcode = 1; // subtração
+        subtrai[0].add1 = 1;   // RAM[1] = expoente
+        subtrai[0].add2 = 3;   // usa RAM[3] = 1
+        subtrai[0].add3 = 1;   // salva de volta
+        subtrai[1].opcode = -1;
+
+        setDado(ram, 3, 1); // RAM[3] = 1 temporário
+        setPrograma(cpu, subtrai);
+        iniciar(cpu, ram);
+    }
+
+    printf("Resultado da potencia: %d^%d = %d\n", base, expoente, getDado(ram, 2));
+}
+
+//PROGRAMA DE FIBONACCI
+  // PROGRAMA DE FIBONACCI
+void programaFibonacci(RAM *ram, CPU *cpu, int n) {
+    printf("Executando programaFibonacci(%d)...\n", n);
+
+    criarRAM_vazia(ram, 4);
+    // RAM[0] = quantidade de termos
+    // RAM[1] = termo anterior
+    // RAM[2] = termo atual
+    // RAM[3] = próximo termo
+
+    setDado(ram, 0, n);
+    setDado(ram, 1, 0); // primeiro termo
+    setDado(ram, 2, 1); // segundo termo
+
+    printf("Sequência de Fibonacci (%d termos):\n", n);
+    printf("%d %d ", getDado(ram, 1), getDado(ram, 2));
+
+    // gera os próximos termos
+    for (int i = 3; i <= getDado(ram, 0); i++) {
+        Instrucao soma[2];
+        soma[0].opcode = 0;  // soma (RAM[3] = RAM[1] + RAM[2])
+        soma[0].add1 = 1;
+        soma[0].add2 = 2;
+        soma[0].add3 = 3;
+        soma[1].opcode = -1;
+
+        setPrograma(cpu, soma);
+        iniciar(cpu, ram);
+
+        printf("%d ", getDado(ram, 3));
+
+        // Atualiza os termos:
+        setDado(ram, 1, getDado(ram, 2)); // anterior = atual
+        setDado(ram, 2, getDado(ram, 3)); // atual = próximo
+    }
+
+    printf("\n");
 }
 
 // Grupo 10 - Otávio Enrique Lopes de Lima,Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes

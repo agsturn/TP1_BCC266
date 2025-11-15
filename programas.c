@@ -25,6 +25,7 @@ void programaRestoDivisao(RAM *ram, CPU *cpu, int dividendo, int divisor);
 void programaFatorial(RAM *ram, CPU *cpu, int numero);
 void programaPotencia(RAM *ram, CPU *cpu, int base, int expoente);
 void programaFibonacci(RAM *ram, CPU *cpu, int n);
+void programaCapslock(RAM *ram, CPU *cpu, char *texto);
 
 int main() {
     RAM ram;
@@ -66,7 +67,11 @@ int main() {
    // programaPotencia(&ram,&cpu,3,4);
 
    //Executa um exemplo de fibonacci
-   programaFibonacci(&ram, &cpu,8);
+   // programaFibonacci(&ram, &cpu,8);
+
+	// Executa um exemplo de capslock
+	// pogramaCapslock(&ram, &cpu, "eXemPLo");
+
 
 
     free(ram.memoria);
@@ -496,4 +501,53 @@ void programaFibonacci(RAM *ram, CPU *cpu, int n) {
     printf("\n");
 }
 
+void programaCapslock(RAM *ram, CPU *cpu, char *texto) {
+
+    int n = strlen(texto);
+
+    // RAM:
+    // [0..n-1] -> caracteres
+    // [n]      -> valor 32 (para subtrair)
+    criarRAM_vazia(ram, n + 1);
+
+    // copia string para RAM 
+    for (int i = 0; i < n; i++) {
+        ram->memoria[i] = (int)texto[i];
+    }
+
+    // armazena o valor 32 (diferença entre 'a' e 'A')
+    ram->memoria[n] = 32;
+
+    // uma instrução fixa: subtrai RAM[i] - RAM[n] -> RAM[i]
+    Instrucao inst[2];
+    inst[0].opcode = 1;   // SUBTRAI
+    inst[0].add2 = n;     // subtrair 32
+    inst[1].opcode = -1;  // HALT
+
+    // percorre cada caractere
+    for (int i = 0; i < n; i++) {
+
+        int c = ram->memoria[i];
+
+        // só altera se for letra minúscula
+        if (c >= 'a' && c <= 'z') {
+
+            inst[0].add1 = i;  
+            inst[0].add3 = i;
+
+            setPrograma(cpu, inst);
+            iniciar(cpu, ram);
+        }
+    }
+
+    // mostra o resultado
+    printf("String convertida para CAPSLOCK: ");
+    for (int i = 0; i < n; i++) {
+        printf("%c", (char)ram->memoria[i]);
+    }
+    printf("\n");
+}
+
+
 // Grupo 10 - Otávio Enrique Lopes de Lima,Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes
+

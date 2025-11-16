@@ -17,7 +17,7 @@ typedef struct {
 
 void setPrograma(CPU *cpu, Instrucao *programaAux);
 void iniciar(CPU *cpu, RAM *ram);
-
+void destruirCPU(CPU* cpu);
 #endif
 
 // Grupo 10 - Otávio Enrique Lopes de Lima, Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes

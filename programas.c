@@ -26,6 +26,7 @@ void programaPotencia(RAM *ram, CPU *cpu, int base, int expoente);
 void programaFibonacci(RAM *ram, CPU *cpu, int n);
 void programaCapslock(RAM *ram, CPU *cpu, char *texto);
 void programaMedia(RAM *ram, CPU *cpu, int tamanhoVetor);
+void programaPorcentagem(RAM *ram, CPU *cpu, int valor, int porcentagem);
 
 int main() {
     RAM ram;
@@ -67,7 +68,10 @@ int main() {
     // pogramaCapslock(&ram, &cpu, "eXemPLo");
 
     // Executa a média de valores gerados aleatoriamente em um vetor 
-    programaMedia(&ram, &cpu, 5);
+    // programaMedia(&ram, &cpu, 5);
+
+    // Executa um exemplo de porcentagem
+    programaPorcentagem(&ram, &cpu, 200, 50);
 
     free(ram.memoria);
 
@@ -541,6 +545,84 @@ void programaMedia(RAM *ram, CPU *cpu, int tamanhoVetor){
     inst6.add1 = getDado(ram, trecho2[1].add3);
 
     printf("A média é: %d", inst6.add1);
+
+}
+
+void programaPorcentagem(RAM *ram, CPU *cpu, int valor, int porcentagem){
+
+    criarRAM_vazia(ram, 5);
+
+    Instrucao inst0;
+
+    inst0.add1 = valor;
+    
+    setDado(ram, 0, 0);
+    setDado(ram, 1, porcentagem);
+
+    Instrucao trecho1[2];
+    Instrucao inst1, inst2;
+
+    inst1.opcode = 0;
+    inst1.add1 = 0;
+    inst1.add2 = 1;
+    inst1.add3 = 0;
+
+    inst2.opcode = -1;
+    inst2.add1 = -1;
+    inst2.add2 = -1;
+    inst2.add3 = -1;
+
+    trecho1[0] = inst1;
+    trecho1[1] = inst2;
+
+    for(int i = 0; i < valor; i++){
+        setPrograma(cpu, trecho1);
+        iniciar(cpu, ram);
+    }
+
+    printf("Multiplicação: %d", getDado(ram, inst1.add3));
+    /*
+    Instrucao inst3;
+
+    inst3.add1 = getDado(ram, trecho1[0].add1);
+    */
+
+    setDado(ram, 2, 100);
+    setDado(ram, 3, 0);
+    setDado(ram, 4, 1);
+
+    Instrucao trecho2[3];
+    Instrucao inst3, inst4, inst5;
+
+    inst3.opcode = 1;
+    inst3.add1 = 0;
+    inst3.add2 = 2;
+    inst3.add3 = 0;
+
+    inst4.opcode = 0;
+    inst4.add1 = 3;
+    inst4.add2 = 4;
+    inst4.add3 = 3;
+
+    inst5.opcode = -1;
+    inst5.add1 = -1;
+    inst5.add2 = -1;
+    inst5.add3 = -1;
+
+    trecho2[0] = inst3;
+    trecho2[1] = inst4;
+    trecho2[2] = inst5;
+
+    while(ram->memoria[trecho2[0].add1] >= ram->memoria[trecho2[0].add2]){
+        setPrograma(cpu, trecho2);
+        iniciar(cpu, ram);
+    }
+
+    Instrucao inst6, inst7;
+    inst6.add1 = getDado(ram, trecho2[1].add3);
+    inst7.add1 = getDado(ram, 1);
+
+    printf("%d%% de %d é igual a %d", inst7.add1, inst0.add1, inst6.add1);
 
 }
 

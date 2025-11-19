@@ -34,13 +34,19 @@ void iniciar(CPU *cpu, RAM *ram) {
                 return;
 
             case 0: // SOMA
-                setDado(ram, inst->add3, getDado(ram, inst->add1) + getDado(ram, inst->add2));
+                cpu->registrador1 = getDado(ram, inst->add1);
+                cpu->registrador2 = getDado(ram, inst->add2);
+                cpu->registrador1 += cpu->registrador2;
+                setDado(ram, inst->add3, cpu->registrador1);
                 printf("SOMA: RAM[%d] = RAM[%d] + RAM[%d] -> %d\n",
                        inst->add3, inst->add1, inst->add2, getDado(ram, inst->add3));
                 break;
 
             case 1: // SUBTRAÇÃO
-                setDado(ram, inst->add3, getDado(ram, inst->add1) - getDado(ram, inst->add2));
+                cpu->registrador1 = getDado(ram, inst->add1);
+                cpu->registrador2 = getDado(ram, inst->add2);
+                cpu->registrador1 -= cpu->registrador2;
+                setDado(ram, inst->add3, cpu->registrador1);
                 printf("SUB: RAM[%d] = RAM[%d] - RAM[%d] -> %d\n",
                        inst->add3, inst->add1, inst->add2, getDado(ram, inst->add3));
                 break;

@@ -9,8 +9,6 @@
      1 -> subtrai
      2 -> copia do registrador para RAM
      3 -> copia da RAM para o registrador
-     4 -> salva conteudo externo no registrador
-     5 -> obtem conteudo do registrador para RAM
 */
 
 // Define o programa da CPU
@@ -71,26 +69,6 @@ void iniciar(CPU *cpu, RAM *ram) {
                 }
                 break;
 
-            case 4: // COPIA VALOR EXTERNO -> REGISTRADOR
-                if (inst->add1 == 0) {
-                    cpu->registrador1 = inst->add2;
-                    printf("COPY_EXT_REG: Registrador1 = %d\n", cpu->registrador1);
-                } else if (inst->add1 == 1) {
-                    cpu->registrador2 = inst->add2;
-                    printf("COPY_EXT_REG: Registrador2 = %d\n", cpu->registrador2);
-                }
-                break;
-
-            case 5: // OBTER REGISTRADOR -> RAM
-                if (inst->add1 == 0) {
-                    setDado(ram, inst->add2, cpu->registrador1);
-                    printf("OBTAIN_REG: RAM[%d] = Registrador1 -> %d\n", inst->add2, cpu->registrador1);
-                } else if (inst->add1 == 1) {
-                    setDado(ram, inst->add2, cpu->registrador2);
-                    printf("OBTAIN_REG: RAM[%d] = Registrador2 -> %d\n", inst->add2, cpu->registrador2);
-                }
-                break;
-
             default:
                 printf("Opcode desconhecido: %d\n", cpu->opcode);
                 return;
@@ -104,4 +82,4 @@ void destruirCPU(CPU* cpu){
     free(cpu);
 }
 
-// Grupo 10 - Otávio Enrique Lopes de Lima,Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes
+// Grupo 10 - Otávio Enrique Lopes de Lima, Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes

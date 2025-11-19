@@ -1,57 +1,43 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "ram.h"
 
-RAM* criarRAM(RAM *ram, int tamanho){
+void criarRAM(RAM* ram, int tamanho){ // Cria a RAM com o tamanho especificado
+    ram->memoria = (int*)malloc(tamanho * sizeof(int));
     ram->tamanho = tamanho;
-    ram->memoria = (int*) malloc(sizeof(int) * tamanho);
+}
 
+void criarRAM_vazia(RAM* ram, int tamanho){ // Cria uma RAM zerada
+    criarRAM(ram, tamanho);
     for(int i = 0; i < tamanho; i++){
         ram->memoria[i] = 0;
     }
-
-    return ram;
 }
 
-RAM* criarRAM_vazia(RAM *ram, int tamanho){
-    return criarRAM(ram, tamanho);
-}
-
-RAM* criarRAM_aleatoria(RAM *ram, int tamanho){
+void criarRAM_aleatoria(RAM* ram, int tamanho){ // Cria uma RAM com valores aleatórios
+    srand(time(NULL));
     criarRAM(ram, tamanho);
-
     for(int i = 0; i < tamanho; i++){
-        ram->memoria[i] = rand() % 100;
+        ram->memoria[i] = rand();  
     }
-
-    return ram;
 }
 
-int getDado(RAM *ram, int pos){
-    if(pos < 0 || pos >= ram->tamanho){
-        printf("ERRO: Endereco %d invalido! Tamanho da RAM: %d\n", pos, ram->tamanho);
-        return 0;
+void setDado(RAM* ram, int endereco, int conteudo){ // Define um valor em um endereço da RAM
+    if(endereco >= 0 && endereco < ram->tamanho){
+        ram->memoria[endereco] = conteudo;
     }
-
-    return ram->memoria[pos];
 }
 
-void setDado(RAM *ram, int pos, int valor){
-    if(pos < 0 || pos >= ram->tamanho){
-        printf("ERRO: Endereco %d invalido! Tamanho da RAM: %d\n", pos, ram->tamanho);
-        return;
+int getDado(RAM* ram, int endereco){ // Retorna o valor de um endereço da RAM
+    if(endereco >= 0 && endereco < ram->tamanho){
+        return ram->memoria[endereco];
     }
-
-    ram->memoria[pos] = valor;
+    return 0;
 }
 
-void imprimir(RAM *ram){
-    printf("Conteudo da RAM:\n");
+void imprimir(RAM* ram){ // Mostra todo o conteúdo da RAM
+    printf("Conteudo da RAM\n");
     for(int i = 0; i < ram->tamanho; i++){
-        printf("%d ", ram->memoria[i]);
+        printf("%d,", ram->memoria[i]);  
     }
     printf("\n");
 }
-
-
-// Grupo 10 - Otávio Enrique Lopes de Lima,Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes
+// Grupo 10 - Otávio Enrique Lopes de Lima, Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes

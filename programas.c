@@ -27,6 +27,9 @@ void programaFibonacci(RAM *ram, CPU *cpu, int n);
 void programaCapslock(RAM *ram, CPU *cpu, char *texto);
 void programaMedia(RAM *ram, CPU *cpu, int tamanhoVetor);
 void programaPorcentagem(RAM *ram, CPU *cpu, int valor, int porcentagem);
+void programaMdc(RAM *ram, CPU *cpu, int a, int b);
+void programaMmc(RAM *ram, CPU *cpu, int a, int b);
+void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c);
 
 int main() {
     RAM ram;
@@ -71,7 +74,16 @@ int main() {
     // programaMedia(&ram, &cpu, 5);
 
     // Executa um exemplo de porcentagem
-    programaPorcentagem(&ram, &cpu, 200, 50);
+    //programaPorcentagem(&ram, &cpu, 200, 50);
+
+    //Executa um exemplo de mdc
+    //programaMdc(&ram,&cpu, 36,44);
+
+    //Execute um exemplo de mmc
+    //programaMmc(&ram,&cpu,36,44);
+
+    //Execute um exemplo de bhaskara
+    programaBhaskara(&ram,&cpu, 2 ,3,-5);
 
     free(ram.memoria);
 
@@ -316,7 +328,7 @@ void programaFatorial(RAM *ram, CPU *cpu, int numero) {
     while (getDado(ram, 1) <= getDado(ram, 0)) {
         setDado(ram, 3, 0); // Zera auxiliar
 
-        // Multiplica resultado * contador (por somas sucessivas)
+        // Multiplica resultado * contador 
         for (int i = 0; i < getDado(ram, 1); i++) {
             Instrucao soma[2];
             soma[0].opcode = 0;  // soma
@@ -348,7 +360,6 @@ void programaFatorial(RAM *ram, CPU *cpu, int numero) {
     printf("Fatorial de %d = %d\n", numero, getDado(ram, 2));
 }
 
-//PROGRAMA DE POTENCIA
 // PROGRAMA DE POTÊNCIA
 void programaPotencia(RAM *ram, CPU *cpu, int base, int expoente) {
 
@@ -625,5 +636,124 @@ void programaPorcentagem(RAM *ram, CPU *cpu, int valor, int porcentagem){
     printf("%d%% de %d é igual a %d", inst7.add1, inst0.add1, inst6.add1);
 
 }
+
+void programaMdc(RAM *ram, CPU *cpu, int a, int b) {
+
+    printf("Executando programaMdc(%d, %d)...\n", a, b);
+
+    criarRAM_vazia(ram, 3);
+    // RAM[0] = a
+    // RAM[1] = b
+    // RAM[2] = resto temporário
+
+    setDado(ram, 0, a);
+    setDado(ram, 1, b);
+
+    while (getDado(ram, 1) != 0) {
+
+        // Calcula resto por subtrações sucessivas
+        setDado(ram, 2, getDado(ram, 0)); // resto = a
+
+        Instrucao sub[2];
+        sub[0].opcode = 1;  // sub
+        sub[0].add1 = 2;    // resto = resto - b
+        sub[0].add2 = 1;
+        sub[0].add3 = 2;
+        sub[1].opcode = -1;
+
+        while (getDado(ram, 2) >= getDado(ram, 1)) {
+            setPrograma(cpu, sub);
+            iniciar(cpu, ram);
+        }
+
+        // Atualiza: a = b / b = resto
+        setDado(ram, 0, getDado(ram, 1));
+        setDado(ram, 1, getDado(ram, 2));
+    }
+
+    printf("MDC = %d\n", getDado(ram, 0));
+}
+
+void programaMmc(RAM *ram, CPU *cpu, int a, int b) {
+
+    printf("Executando programaMmc(%d, %d)...\n", a, b);
+
+    RAM ramAux;
+
+    //calcula o MDC
+    programaMdc(ram, cpu, a, b);
+    int mdc = getDado(ram, 0);
+
+    //Multiplica a * b 
+    programaMultiplica(&ramAux, cpu, a, b);
+    int produto = ramAux.memoria[0];
+    free(ramAux.memoria);
+
+    //Divide produto / mdc 
+    programaDivide(ram, cpu, produto, mdc);
+
+    printf("\nMMC = %d\n", getDado(ram, 2));
+}
+
+void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c) {
+
+    printf("Executando programaBhaskara(%d, %d, %d)...\n", a, b, c);
+
+    // b^2
+    programaMultiplica(ram, cpu, b, b);
+    int b2 = getDado(ram, 0);
+
+    //  4ac 
+    programaMultiplica(ram, cpu, a, c);
+    int ac = getDado(ram, 0);
+
+    programaMultiplica(ram, cpu, ac, 4);
+    int quatro_ac = getDado(ram, 0);
+
+    //delta = b² - 4ac 
+    criarRAM_vazia(ram, 3);
+    setDado(ram, 0, b2);
+    setDado(ram, 1, quatro_ac);
+
+    Instrucao sub[2];
+    sub[0].opcode = 1;  // subtrai
+    sub[0].add1 = 0;
+    sub[0].add2 = 1;
+    sub[0].add3 = 0;
+    sub[1].opcode = -1;
+
+    setPrograma(cpu, sub);
+    iniciar(cpu, ram);
+
+    int delta = getDado(ram, 0);
+    printf("Delta = %d\n", delta);
+
+    if (delta < 0) {
+        printf("Não existe raiz real.\n");
+        return;
+    }
+
+    // raiz inteira de delta
+    int raiz = 0;
+    while (raiz * raiz <= delta)
+        raiz++;
+
+    raiz--;  // último valor válido
+
+    printf("Raiz inteira aproximada = %d\n", raiz);
+
+    // x1 = (-b + raiz) / (2a)
+    int numerador1 = (-b + raiz);
+    programaDivide(ram, cpu, numerador1, 2 * a);
+    int x1 = getDado(ram, 0);
+
+    //x2 = (-b - raiz) / (2a)
+    int numerador2 = (-b - raiz);
+    programaDivide(ram, cpu, numerador2, 2 * a);
+    int x2 = getDado(ram, 0);
+
+    printf("x1 = %d\nx2 = %d\n", x1, x2);
+}
+
 
 // Grupo 10 - Otávio Enrique Lopes de Lima, Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes

@@ -5,12 +5,15 @@
 #include <stdlib.h>
 #include <time.h>
 
-typedef struct RAM RAM;
+typedef struct {
+    int *memoria;
+    int tamanho;
+} RAM;
 
 // Funções para criar a RAM
-RAM* criarRAM(int tamanho);             
-RAM* criarRAM_vazia(int tamanho);       
-RAM* criarRAM_aleatoria(int tamanho);   
+RAM* criarRAM(RAM *ram,int tamanho);             
+RAM* criarRAM_vazia(RAM *ram,int tamanho);       
+RAM* criarRAM_aleatoria(RAM *ram,int tamanho);   
 
 // Funções para acessar/modificar memória
 void setDado(RAM* ram, int endereco, int conteudo);

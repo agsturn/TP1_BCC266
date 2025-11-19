@@ -536,7 +536,7 @@ void programaFibonacci(RAM *ram, CPU *cpu, int n) {
     printf("\n");
 }
 
-
+// Recebe uma string e a converte em letras maiúsculas
 void programaCapslock(RAM *ram, CPU *cpu, char *texto) {
 
     int n = strlen(texto);
@@ -838,3 +838,4 @@ void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c) {
 
 
 // Grupo 10 - Otávio Enrique Lopes de Lima, Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes
+

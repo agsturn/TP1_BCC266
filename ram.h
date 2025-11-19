@@ -11,9 +11,9 @@ typedef struct {
 } RAM;
 
 // Funções para criar a RAM
-RAM* criarRAM(RAM *ram,int tamanho);             
-RAM* criarRAM_vazia(RAM *ram,int tamanho);       
-RAM* criarRAM_aleatoria(RAM *ram,int tamanho);   
+void criarRAM(RAM* ram, int tamanho);
+void criarRAM_vazia(RAM* ram, int tamanho);
+void criarRAM_aleatoria(RAM* ram, int tamanho);
 
 // Funções para acessar/modificar memória
 void setDado(RAM* ram, int endereco, int conteudo);

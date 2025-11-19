@@ -53,10 +53,10 @@ int main() {
     // programaDivide(&ram, &cpu, 500, 19);
 
     // Calcula resto de divisão
-    // programaRestoDivisao(&ram, &cpu, 101, 0);
+    // programaRestoDivisao(&ram, &cpu, 101, 5);
 
     // Executa um exemplo de raíz quadrada
-    // programaRaizQuadrada(&ram, &cpu, 25);
+    // programaRaizQuadrada(&ram, &cpu, 0);
 
     // Executa um exemplo de fatorial
     // programaFatorial(&ram, &cpu, 5);
@@ -83,7 +83,7 @@ int main() {
     //programaMmc(&ram,&cpu,36,44);
 
     //Execute um exemplo de bhaskara
-    programaBhaskara(&ram,&cpu, 2 ,3,-5);
+     programaBhaskara(&ram,&cpu, 2 ,3,-5);
 
     free(ram.memoria);
 
@@ -246,11 +246,11 @@ void programaDivide(RAM *ram, CPU *cpu, int dividendo, int divisor){
     trecho1[1] = inst2;
     trecho1[2] = inst3;
 
-    while(ram->memoria[trecho1[0].add1] >= ram->memoria[trecho1[0].add2]){
+    while(getDado(ram, trecho1[0].add1) >= getDado(ram, trecho1[0].add2)){
         setPrograma(cpu, trecho1);
         iniciar(cpu, ram);
     }
-
+    
     Instrucao inst4;
     inst4.add1 = getDado(ram, trecho1[1].add3);
 
@@ -295,18 +295,104 @@ void programaRestoDivisao(RAM *ram, CPU *cpu, int dividendo, int divisor){
 //Calcula a raíz quadrada
 void programaRaizQuadrada(RAM *ram, CPU *cpu, int radicando){
 
-    RAM ram2;
-    criarRAM_vazia(ram, 2);
-    ram->memoria[0] = radicando;
-    cpu->registrador1 = 0;
+    criarRAM_vazia(ram, 4);
+    setDado(ram, 0, radicando);
+    setDado(ram, 1, 0);
+    setDado(ram, 3, 1);
 
+    Instrucao trecho0[2];
+    Instrucao inst1, inst2;
 
-    for(ram->memoria[1] = 1; cpu->registrador1 <= ram->memoria[0]; ram->memoria[1]++){
-        programaMultiplica(&ram2, cpu, ram->memoria[1], ram->memoria[1]);
-        free(ram2.memoria);
+    inst1.opcode = 3;
+    inst1.add1 = 1;
+    inst1.add2 = 0;
+    inst1.add3 = -1;
+
+    inst2.opcode = -1;
+    inst2.add1 = -1;
+    inst2.add2 = -1;
+    inst2.add3 = -1;
+
+    trecho0[0] = inst1;
+    trecho0[1] = inst2;
+    setPrograma(cpu, trecho0);
+    iniciar(cpu, ram);
+
+    setDado(ram, 1, 1);
+
+    while(getDado(ram, 2) <= getDado(ram, 0)){
+        setDado(ram, 2, 0);
+
+        Instrucao trecho1[2];
+        Instrucao inst3, inst4;
+
+        inst3.opcode = 0;
+        inst3.add1 = 2;
+        inst3.add2 = 1;
+        inst3.add3 = 2;
+
+        inst4.opcode = -1;
+        inst4.add1 = -1;
+        inst4.add2 = -1;
+        inst4.add3 = -1;
+
+        trecho1[0] = inst3;
+        trecho1[1] = inst4;
+
+        for(int i = 0; i < getDado(ram, 1); i++){
+            setPrograma(cpu, trecho1);
+            iniciar(cpu, ram);
+        }
+
+        Instrucao trecho2[2];
+        Instrucao inst5, inst6;
+
+        inst5.opcode = 0;
+        inst5.add1 = 1;
+        inst5.add2 = 3;
+        inst5.add3 = 1;
+
+        inst6.opcode = -1;
+        inst6.add1 = -1;
+        inst6.add2 = -1;
+        inst6.add3 = -1;
+
+        trecho2[0] = inst5;
+        trecho2[1] = inst6;
+
+        setPrograma(cpu, trecho2);
+        iniciar(cpu, ram);
     }
-    
-    printf("Resultado da raiz quadrada: %d", ram->memoria[1] - 2);
+
+    Instrucao trecho3[3];
+    Instrucao inst7, inst8, inst9;
+
+    inst7.opcode = 1;
+    inst7.add1 = 1;
+    inst7.add2 = 3;
+    inst7.add3 = 1;
+
+    inst8.opcode = 1;
+    inst8.add1 = 1;
+    inst8.add2 = 3;
+    inst8.add3 = 1;
+
+    inst9.opcode = -1;
+    inst9.add1 = -1;
+    inst9.add2 = -1;
+    inst9.add3 = -1;
+
+    trecho3[0] = inst7;
+    trecho3[1] = inst8;
+    trecho3[2] = inst9;
+
+    setPrograma(cpu, trecho3);
+    iniciar(cpu, ram);
+
+    Instrucao inst10;
+    inst10.add1 = getDado(ram, 1);
+
+    printf("Resultado da raiz quadrada: %d", inst10.add1);
 }
 
 // PROGRAMA DE FATORIAL
@@ -547,7 +633,7 @@ void programaMedia(RAM *ram, CPU *cpu, int tamanhoVetor){
     trecho2[1] = inst4;
     trecho2[2] = inst5;
 
-    while(ram->memoria[trecho2[0].add1] >= ram->memoria[trecho2[0].add2]){
+    while(getDado(ram, trecho2[0].add1) >= getDado(ram, trecho2[0].add2)){
         setPrograma(cpu, trecho2);
         iniciar(cpu, ram);
     }
@@ -592,11 +678,6 @@ void programaPorcentagem(RAM *ram, CPU *cpu, int valor, int porcentagem){
     }
 
     printf("Multiplicação: %d", getDado(ram, inst1.add3));
-    /*
-    Instrucao inst3;
-
-    inst3.add1 = getDado(ram, trecho1[0].add1);
-    */
 
     setDado(ram, 2, 100);
     setDado(ram, 3, 0);
@@ -624,7 +705,7 @@ void programaPorcentagem(RAM *ram, CPU *cpu, int valor, int porcentagem){
     trecho2[1] = inst4;
     trecho2[2] = inst5;
 
-    while(ram->memoria[trecho2[0].add1] >= ram->memoria[trecho2[0].add2]){
+    while(getDado(ram, trecho2[0].add1) >= getDado(ram, trecho2[0].add2)){
         setPrograma(cpu, trecho2);
         iniciar(cpu, ram);
     }

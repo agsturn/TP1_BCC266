@@ -9,8 +9,6 @@
     // 1 -> subtrai
     // 2 -> copia do registrador para RAM
     // 3 -> copia da RAM para o registrador
-    // 4 -> salva conteudo externo no registrador
-    // 5 -> obtem conteudo externo do registrador
 */
 
 // Declaração das funções dos programas
@@ -30,6 +28,8 @@ void programaPorcentagem(RAM *ram, CPU *cpu, int valor, int porcentagem);
 void programaMdc(RAM *ram, CPU *cpu, int a, int b);
 void programaMmc(RAM *ram, CPU *cpu, int a, int b);
 void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c);
+void programaSomaTres(RAM *ram, CPU *cpu, int a, int b, int c);
+void programaFormulaHeron(RAM *ram, CPU *cpu, int a, int b, int c);
 
 int main() {
     RAM ram;
@@ -56,7 +56,7 @@ int main() {
     // programaRestoDivisao(&ram, &cpu, 101, 5);
 
     // Executa um exemplo de raíz quadrada
-    // programaRaizQuadrada(&ram, &cpu, 0);
+    // programaRaizQuadrada(&ram, &cpu, 25);
 
     // Executa um exemplo de fatorial
     // programaFatorial(&ram, &cpu, 5);
@@ -74,7 +74,7 @@ int main() {
     // programaMedia(&ram, &cpu, 5);
 
     // Executa um exemplo de porcentagem
-    //programaPorcentagem(&ram, &cpu, 200, 50);
+    // programaPorcentagem(&ram, &cpu, 200, 50);
 
     //Executa um exemplo de mdc
     //programaMdc(&ram,&cpu, 36,44);
@@ -83,7 +83,13 @@ int main() {
     //programaMmc(&ram,&cpu,36,44);
 
     //Execute um exemplo de bhaskara
-     programaBhaskara(&ram,&cpu, 2 ,3,-5);
+    // programaBhaskara(&ram,&cpu, 2 ,3,-5);
+
+    // Executa um exemplo de soma de três números
+    // programaSomaTres(&ram, &cpu, 1, 2, 3);
+
+    //Calcula a área de um triângulo a partir da fórmula de Heron a partir do comprimento dos lados
+    programaFormulaHeron(&ram, &cpu, 3, 4, 5);
 
     free(ram.memoria);
 
@@ -184,7 +190,8 @@ void programaAleatorio(RAM *ram, CPU *cpu, int qdeInstrucoes) {
 void programaMultiplica(RAM *ram, CPU *cpu, int multiplicando, int multiplicador){
 
     criarRAM_vazia(ram, 2);
-    setDado(ram, 0, 0);
+    
+    setDado(ram, 0, multiplicando);
     setDado(ram, 1, multiplicando);
 
     Instrucao trecho1[2];
@@ -203,7 +210,7 @@ void programaMultiplica(RAM *ram, CPU *cpu, int multiplicando, int multiplicador
     trecho1[0] = inst1;
     trecho1[1] = inst2;
 
-    for(int i = 0; i < multiplicador; i++){
+    for(int i = 1; i < multiplicador; i++){
         setPrograma(cpu, trecho1);
         iniciar(cpu, ram);
     }
@@ -212,13 +219,14 @@ void programaMultiplica(RAM *ram, CPU *cpu, int multiplicando, int multiplicador
 
     inst3.add1 = getDado(ram, trecho1[0].add1);
 
-    printf("\nResultado da multiplicação: %d\n", inst3.add1);
+    printf("\nResultado da multiplicacao: %d\n", inst3.add1);
 }
 
 //Programa que mostra a parte inteira da divisão de dois números inteiros
 void programaDivide(RAM *ram, CPU *cpu, int dividendo, int divisor){
 
     criarRAM_vazia(ram, 4);
+    
     setDado(ram, 0, dividendo);
     setDado(ram, 1, divisor);
     setDado(ram, 2, 0);
@@ -254,7 +262,7 @@ void programaDivide(RAM *ram, CPU *cpu, int dividendo, int divisor){
     Instrucao inst4;
     inst4.add1 = getDado(ram, trecho1[1].add3);
 
-    printf("Resultado da divisão: %d", inst4.add1);
+    printf("\nResultado da divisao: %d\n", inst4.add1);
 
 }
 
@@ -289,47 +297,29 @@ void programaRestoDivisao(RAM *ram, CPU *cpu, int dividendo, int divisor){
     Instrucao inst3;
     inst3.add1 = getDado(ram, trecho1[0].add1);
 
-    printf("Resto da divisão: %d", inst3.add1);
+    printf("\nResto da divisao: %d\n", inst3.add1);
 }
 
 //Calcula a raíz quadrada
 void programaRaizQuadrada(RAM *ram, CPU *cpu, int radicando){
 
-    criarRAM_vazia(ram, 4);
-    setDado(ram, 0, radicando);
-    setDado(ram, 1, 0);
-    setDado(ram, 3, 1);
-
-    Instrucao trecho0[2];
     Instrucao inst1, inst2;
+    inst1.add1 = 0;
+    inst2.add1 = 1;
 
-    inst1.opcode = 3;
-    inst1.add1 = 1;
-    inst1.add2 = 0;
-    inst1.add3 = -1;
-
-    inst2.opcode = -1;
-    inst2.add1 = -1;
-    inst2.add2 = -1;
-    inst2.add3 = -1;
-
-    trecho0[0] = inst1;
-    trecho0[1] = inst2;
-    setPrograma(cpu, trecho0);
-    iniciar(cpu, ram);
-
-    setDado(ram, 1, 1);
-
-    while(getDado(ram, 2) <= getDado(ram, 0)){
-        setDado(ram, 2, 0);
-
-        Instrucao trecho1[2];
+    while(inst1.add1 <= radicando){
+        Instrucao trecho1[3];
         Instrucao inst3, inst4;
+        programaMultiplica(ram, cpu, inst2.add1, inst2.add1);
+        
+        inst1.add1 = getDado(ram, 0);
+        setDado(ram, 0, inst2.add1);
+        setDado(ram, 1, 1);
 
         inst3.opcode = 0;
-        inst3.add1 = 2;
+        inst3.add1 = 0;
         inst3.add2 = 1;
-        inst3.add3 = 2;
+        inst3.add3 = 0;
 
         inst4.opcode = -1;
         inst4.add1 = -1;
@@ -339,60 +329,44 @@ void programaRaizQuadrada(RAM *ram, CPU *cpu, int radicando){
         trecho1[0] = inst3;
         trecho1[1] = inst4;
 
-        for(int i = 0; i < getDado(ram, 1); i++){
-            setPrograma(cpu, trecho1);
-            iniciar(cpu, ram);
-        }
-
-        Instrucao trecho2[2];
-        Instrucao inst5, inst6;
-
-        inst5.opcode = 0;
-        inst5.add1 = 1;
-        inst5.add2 = 3;
-        inst5.add3 = 1;
-
-        inst6.opcode = -1;
-        inst6.add1 = -1;
-        inst6.add2 = -1;
-        inst6.add3 = -1;
-
-        trecho2[0] = inst5;
-        trecho2[1] = inst6;
-
-        setPrograma(cpu, trecho2);
+        setPrograma(cpu, trecho1);
         iniciar(cpu, ram);
+
+        inst2.add1 = getDado(ram, 0);
     }
 
-    Instrucao trecho3[3];
-    Instrucao inst7, inst8, inst9;
+    
+    Instrucao trecho2[3];
+    Instrucao inst5, inst6, inst7;
 
-    inst7.opcode = 1;
-    inst7.add1 = 1;
-    inst7.add2 = 3;
-    inst7.add3 = 1;
+    inst5.opcode = 1;
+    inst5.add1 = 0;
+    inst5.add2 = 1;
+    inst5.add3 = 0;
 
-    inst8.opcode = 1;
-    inst8.add1 = 1;
-    inst8.add2 = 3;
-    inst8.add3 = 1;
+    inst6.opcode = 1;
+    inst6.add1 = 0;
+    inst6.add2 = 1;
+    inst6.add3 = 0;
 
-    inst9.opcode = -1;
-    inst9.add1 = -1;
-    inst9.add2 = -1;
-    inst9.add3 = -1;
+    inst7.opcode = -1;
+    inst7.add1 = -1;
+    inst7.add2 = -1;
+    inst7.add3 = -1;
 
-    trecho3[0] = inst7;
-    trecho3[1] = inst8;
-    trecho3[2] = inst9;
+    trecho2[0] = inst5;
+    trecho2[1] = inst6;
+    trecho2[2] = inst7;
 
-    setPrograma(cpu, trecho3);
+    setPrograma(cpu, trecho2);
     iniciar(cpu, ram);
 
-    Instrucao inst10;
-    inst10.add1 = getDado(ram, 1);
+    
+    Instrucao inst8;
+    inst8.add1 = getDado(ram, 0);
+    
 
-    printf("Resultado da raiz quadrada: %d", inst10.add1);
+    printf("\nResultado da raiz quadrada: %d\n", inst8.add1);
 }
 
 // PROGRAMA DE FATORIAL
@@ -641,7 +615,7 @@ void programaMedia(RAM *ram, CPU *cpu, int tamanhoVetor){
     Instrucao inst6;
     inst6.add1 = getDado(ram, trecho2[1].add3);
 
-    printf("A média é: %d", inst6.add1);
+    printf("\nA média eh: %d\n", inst6.add1);
 
 }
 
@@ -836,6 +810,129 @@ void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c) {
     printf("x1 = %d\nx2 = %d\n", x1, x2);
 }
 
+void programaSomaTres(RAM *ram, CPU *cpu, int a, int b, int c){
+
+    Instrucao trecho1[3];
+    Instrucao inst1, inst2, inst3;
+
+    criarRAM_vazia(ram, 3);
+    setDado(ram, 0, a);
+    setDado(ram, 1, b);
+    setDado(ram, 2, c);
+
+    inst1.opcode = 0;
+    inst1.add1 = 0;
+    inst1.add2 = 1;
+    inst1.add3 = 0;
+
+    inst2.opcode = 0;
+    inst2.add1 = 0;
+    inst2.add2 = 2;
+    inst2.add3 = 0;
+
+    inst3.opcode = -1;
+    inst3.add1 = -1;
+    inst3.add2 = -1;
+    inst3.add3 = -1;
+
+    trecho1[0] = inst1;
+    trecho1[1] = inst2;
+    trecho1[2] = inst3;
+
+    setPrograma(cpu, trecho1);
+    iniciar(cpu, ram);
+
+    Instrucao inst4;
+    inst4.add1 = getDado(ram, 0);
+
+    printf("\nO resultado da soma eh: %d\n", inst4.add1);
+}
+
+void programaFormulaHeron(RAM *ram, CPU *cpu, int a, int b, int c){
+
+    Instrucao inst1, inst2;
+
+    //Calculando o semi-perímetro
+    programaSomaTres(ram, cpu, a, b, c);
+
+    inst1.add1 = getDado(ram, 0);
+    free(ram->memoria);
+
+    programaDivide(ram, cpu, inst1.add1, 2);
+
+    inst2.add1 = getDado(ram, 2);
+
+    setDado(ram, 0, inst2.add1);
+    setDado(ram, 1, a);
+    setDado(ram, 2, b);
+    setDado(ram, 3, c);
+
+    Instrucao trecho1[4];
+    Instrucao  inst3, inst4, inst5, inst6;
+    inst3.opcode = 1;
+    inst3.add1 = 0;
+    inst3.add2 = 1;
+    inst3.add3 = 1;
+
+    inst4.opcode = 1;
+    inst4.add1 = 0;
+    inst4.add2 = 2;
+    inst4.add3 = 2;
+
+    inst5.opcode = 1;
+    inst5.add1 = 0;
+    inst5.add2 = 3;
+    inst5.add3 = 3;
+
+    inst6.opcode = -1;
+    inst6.add1 = -1;
+    inst6.add2 = -1;
+    inst6.add3 = -1;
+
+    trecho1[0] = inst3;
+    trecho1[1] = inst4;
+    trecho1[2] = inst5;
+    trecho1[3] = inst6;
+
+    setPrograma(cpu, trecho1);
+    iniciar(cpu, ram);
+
+    Instrucao inst7, inst8, inst9;
+
+    inst7.add1 = getDado(ram, 1);
+    inst8.add1 = getDado(ram, 2);
+    inst9.add1 = getDado(ram, 3);
+
+    free(ram->memoria);
+
+    programaMultiplica(ram, cpu, inst2.add1, inst7.add1);
+
+    Instrucao inst10;
+    inst10.add1 = getDado(ram, 0);
+
+    free(ram->memoria);
+
+    programaMultiplica(ram, cpu, inst10.add1, inst8.add1);
+
+    Instrucao inst11;
+    inst11.add1 = getDado(ram, 0);
+
+    free(ram->memoria);
+
+    programaMultiplica(ram, cpu, inst11.add1, inst9.add1);
+
+    Instrucao inst12;
+    inst12.add1 = getDado(ram, 0);
+    free(ram->memoria);
+
+    programaRaizQuadrada(ram, cpu, inst12.add1);
+
+    Instrucao inst13;
+    inst13.add1 = getDado(ram, 0);
+
+    printf("\nA area do triangulo eh: %d\n", inst13.add1);
+
+}
+
 
 // Grupo 10 - Otávio Enrique Lopes de Lima, Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes
-

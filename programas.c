@@ -30,7 +30,7 @@ void programaMmc(RAM *ram, CPU *cpu, int a, int b);
 void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c);
 void programaSomaTres(RAM *ram, CPU *cpu, int a, int b, int c);
 void programaFormulaHeron(RAM *ram, CPU *cpu, int a, int b, int c);
-void programaJurosCompostos(RAM *ram, CPU *cpu, int principal, int jurosPercentual, int n);
+void programaOR(RAM *ram, CPU *cpu, int a, int b);
 
 int main() {
     RAM ram;
@@ -92,8 +92,8 @@ int main() {
     //Calcula a área de um triângulo a partir da fórmula de Heron a partir do comprimento dos lados
     programaFormulaHeron(&ram, &cpu, 3, 4, 5);
 
-    // Executa um exemplo de juros compostos -> 5% de juros apkicados a 2300 reais por 6 meses
-    // programaJurosCompostos(&ram, &cpu, 2300, 5, 6);
+    // Executa um exemplo da função OR
+    // programaOR(&ram, &cpu, 0, 1);
 
     free(ram.memoria);
 
@@ -939,43 +939,74 @@ void programaFormulaHeron(RAM *ram, CPU *cpu, int a, int b, int c){
 }
 
 
-void programaJurosCompostos(RAM *ram, CPU *cpu, int principal, int jurosPercentual, int n) {
-    // Criamos RAM com 4 posições:
-    // 0 -> acumulado
-    // 1 -> fator (100 + juros)
-    // 2 -> contador
-    // 3 -> 1
-    criarRAM_vazia(ram, 4);
+void programaOR(RAM *ram, CPU *cpu, int a, int b)
+{
+    printf("Executando OR(%d, %d)...\n", a, b);
 
-    setDado(ram, 0, principal);            // acumulado inicial
-    setDado(ram, 1, 100 + jurosPercentual); // fator multiplicativo
-    setDado(ram, 2, 0);                     // contador
-    setDado(ram, 3, 1);                     // constante 1
+    // RAM:
+    // 0 = A
+    // 1 = B
+    // 2 = R
+    // 3 = temp
+    // 4 = constante 1
 
-    Instrucao incCounter[2];
-    incCounter[0].opcode = 0;   // soma
-    incCounter[0].add1 = 2;
-    incCounter[0].add2 = 3;
-    incCounter[0].add3 = 2;
+    criarRAM_vazia(ram, 5);
+    setDado(ram, 0, a);
+    setDado(ram, 1, b);
+    setDado(ram, 2, 0);
+    setDado(ram, 4, 1); // constante 1
+    
+    // Teste: se A != 0 → R = 1
+    setDado(ram, 3, getDado(ram, 0)); // temp = A
 
-    incCounter[1].opcode = -1;
+    Instrucao diminuiA[2];
+    diminuiA[0].opcode = 1;   // temp = temp - 1
+    diminuiA[0].add1 = 3;
+    diminuiA[0].add2 = 4;
+    diminuiA[0].add3 = 3;
+    diminuiA[1].opcode = -1;
 
-    // loop n vezes: acumulado *= fator
-    for (int i = 0; i < n; i++) {
-        programaMultiplica(ram, cpu, getDado(ram, 0), getDado(ram, 1));
-        setDado(ram, 0, getDado(ram, 0)); // resultado fica em RAM[0]
-        setPrograma(cpu, incCounter);
+    while (getDado(ram, 3) > 0) {
+        setPrograma(cpu, diminuiA);
         iniciar(cpu, ram);
     }
 
-    // divisão por 100^n (retorna parte inteira)
-    for (int j = 0; j < n; j++) {
-        programaDivide(ram, cpu, getDado(ram, 0), 100);
-        setDado(ram, 0, getDado(ram, 0));
+    if (getDado(ram, 3) == 0 && getDado(ram, 0) > 0) {
+        setDado(ram, 2, 1);
+        printf("Resultado OR = 1\n");
+        return;
     }
 
-    printf("Montante final (juros compostos): %d\n", getDado(ram, 0));
+    // Teste: se B != 0 → R = 1
+
+    setDado(ram, 3, getDado(ram, 1)); // temp = B
+
+    Instrucao diminuiB[2];
+    diminuiB[0].opcode = 1;   // temp = temp - 1
+    diminuiB[0].add1 = 3;
+    diminuiB[0].add2 = 4;
+    diminuiB[0].add3 = 3;
+    diminuiB[1].opcode = -1;
+
+    while (getDado(ram, 3) > 0) {
+        setPrograma(cpu, diminuiB);
+        iniciar(cpu, ram);
+    }
+
+    if (getDado(ram, 3) == 0 && getDado(ram, 1) > 0) {
+        setDado(ram, 2, 1);
+        printf("Resultado OR = 1\n");
+        return;
+    }
+
+    // Se chegou aqui nenhum é > 0
+    
+    setDado(ram, 2, 0);
+    printf("Resultado OR = 0\n");
 }
 
+
+
 // Grupo 10 - Otávio Enrique Lopes de Lima, Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes
+
 

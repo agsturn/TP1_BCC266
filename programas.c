@@ -30,6 +30,7 @@ void programaMmc(RAM *ram, CPU *cpu, int a, int b);
 void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c);
 void programaSomaTres(RAM *ram, CPU *cpu, int a, int b, int c);
 void programaFormulaHeron(RAM *ram, CPU *cpu, int a, int b, int c);
+void programaJurosCompostos(RAM *ram, CPU *cpu, int principal, int jurosPercentual, int n);
 
 int main() {
     RAM ram;
@@ -90,6 +91,9 @@ int main() {
 
     //Calcula a área de um triângulo a partir da fórmula de Heron a partir do comprimento dos lados
     programaFormulaHeron(&ram, &cpu, 3, 4, 5);
+
+    // Executa um exemplo de juros compostos -> 5% de juros apkicados a 2300 reais por 6 meses
+    // programaJurosCompostos(&ram, &cpu, 2300, 5, 6);
 
     free(ram.memoria);
 
@@ -935,4 +939,43 @@ void programaFormulaHeron(RAM *ram, CPU *cpu, int a, int b, int c){
 }
 
 
+void programaJurosCompostos(RAM *ram, CPU *cpu, int principal, int jurosPercentual, int n) {
+    // Criamos RAM com 4 posições:
+    // 0 -> acumulado
+    // 1 -> fator (100 + juros)
+    // 2 -> contador
+    // 3 -> 1
+    criarRAM_vazia(ram, 4);
+
+    setDado(ram, 0, principal);            // acumulado inicial
+    setDado(ram, 1, 100 + jurosPercentual); // fator multiplicativo
+    setDado(ram, 2, 0);                     // contador
+    setDado(ram, 3, 1);                     // constante 1
+
+    Instrucao incCounter[2];
+    incCounter[0].opcode = 0;   // soma
+    incCounter[0].add1 = 2;
+    incCounter[0].add2 = 3;
+    incCounter[0].add3 = 2;
+
+    incCounter[1].opcode = -1;
+
+    // loop n vezes: acumulado *= fator
+    for (int i = 0; i < n; i++) {
+        programaMultiplica(ram, cpu, getDado(ram, 0), getDado(ram, 1));
+        setDado(ram, 0, getDado(ram, 0)); // resultado fica em RAM[0]
+        setPrograma(cpu, incCounter);
+        iniciar(cpu, ram);
+    }
+
+    // divisão por 100^n (retorna parte inteira)
+    for (int j = 0; j < n; j++) {
+        programaDivide(ram, cpu, getDado(ram, 0), 100);
+        setDado(ram, 0, getDado(ram, 0));
+    }
+
+    printf("Montante final (juros compostos): %d\n", getDado(ram, 0));
+}
+
 // Grupo 10 - Otávio Enrique Lopes de Lima, Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes
+

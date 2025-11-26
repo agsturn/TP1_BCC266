@@ -10,7 +10,7 @@
      2 -> copia do registrador para RAM
      3 -> copia da RAM para o registrador
      4 -> salva conteudo externo no registrador
-     5 -> obtem conteudo do registrador para RAM
+     5 -> obtem conteudo do registrador
 */
 
 // Define o programa da CPU
@@ -81,13 +81,13 @@ void iniciar(CPU *cpu, RAM *ram) {
                 }
                 break;
 
-            case 5: // OBTER REGISTRADOR -> RAM
+            case 5: // OBTEM CONTEUDO DO REGISTRADOR
                 if (inst->add1 == 0) {
-                    setDado(ram, inst->add2, cpu->registrador1);
-                    printf("OBTAIN_REG: RAM[%d] = Registrador1 -> %d\n", inst->add2, cpu->registrador1);
+                    inst->add2 = cpu->registrador1;
+                    printf("Inst obtain_reg -> Registrador1 com conteudo %d\n", cpu->registrador1);
                 } else if (inst->add1 == 1) {
-                    setDado(ram, inst->add2, cpu->registrador2);
-                    printf("OBTAIN_REG: RAM[%d] = Registrador2 -> %d\n", inst->add2, cpu->registrador2);
+                    inst->add2 = cpu->registrador2;
+                    printf("Inst obtain_reg -> Registrador2 com conteudo %d\n", cpu->registrador2);
                 }
                 break;
 

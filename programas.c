@@ -63,10 +63,10 @@ int main() {
     // programaFatorial(&ram, &cpu, 5);
     
     // Executa um exemplo de potencia
-    // programaPotencia(&ram, &cpu, 3, 4);
+    //programaPotencia(&ram, &cpu, 3, 4);
     
     // Executa um exemplo de fibonacci
-    // programaFibonacci(&ram, &cpu, 8);
+    //programaFibonacci(&ram, &cpu, 8);
     
     // Executa um exemplo de capslock
     // pogramaCapslock(&ram, &cpu, "eXemPLo");
@@ -78,19 +78,19 @@ int main() {
     // programaPorcentagem(&ram, &cpu, 200, 50);
 
     //Executa um exemplo de mdc
-    //programaMdc(&ram,&cpu, 36,44);
+    // deu merda programaMdc(&ram,&cpu, 36,44);
 
     //Execute um exemplo de mmc
-    //programaMmc(&ram,&cpu,36,44);
+    // deu merda programaMmc(&ram,&cpu,36,44);
 
     //Execute um exemplo de bhaskara
-    // programaBhaskara(&ram,&cpu, 2 ,3,-5);
+    programaBhaskara(&ram,&cpu, 2 ,3,-5);
 
     // Executa um exemplo de soma de três números
     // programaSomaTres(&ram, &cpu, 1, 2, 3);
 
     //Calcula a área de um triângulo a partir da fórmula de Heron a partir do comprimento dos lados
-    programaFormulaHeron(&ram, &cpu, 3, 4, 5);
+    //programaFormulaHeron(&ram, &cpu, 3, 4, 5);
 
     // Executa um exemplo da função OR
     // programaOR(&ram, &cpu, 0, 1);
@@ -104,25 +104,37 @@ int main() {
 void programaSoma(RAM *ram, CPU *cpu) {
     printf("Executando programaSoma()...\n");
 
-    criarRAM_vazia(ram, 3); // Cria uma RAM com 3 posições, todas zeradas
-
-    Instrucao programa[3];  // Vetor de instruções
-
-    // Instrução 1: soma RAM[0] + RAM[1] → RAM[2]
-    programa[0].opcode = 0;  
-    programa[0].add1 = 0;
-    programa[0].add2 = 1;
-    programa[0].add3 = 2;
-
-    // Instrução 2: fim do programa
-    programa[1].opcode = -1;
-    programa[1].add1 = -1;
-    programa[1].add2 = -1;
-    programa[1].add3 = -1;
+    criarRAM_vazia(ram, 4); // Cria uma RAM com 4 posições
 
     // Valores iniciais na RAM
     setDado(ram, 0, 7);   // RAM[0] = 7
     setDado(ram, 1, 5);   // RAM[1] = 5
+    setDado(ram, 2, 0);   // RAM[2] = resultado
+    setDado(ram, 3, 10);  // RAM[3] = constante (não usada)
+
+    Instrucao programa[3];
+
+    // Instrução 1: COPIA RAM[0] -> REGISTRADOR1
+    programa[0].opcode = 3;
+    programa[0].add1 = 0;
+    programa[0].add2 = 0;
+
+    // Instrução 2: COPIA RAM[1] -> REGISTRADOR2
+    programa[1].opcode = 3;
+    programa[1].add1 = 1;
+    programa[1].add2 = 1;
+
+    // Instrução 3: SOMA REGISTRADOR1 + REGISTRADOR2 -> RAM[2]
+    programa[2].opcode = 0;
+    programa[2].add1 = 0;
+    programa[2].add2 = 1;
+    programa[2].add3 = 2;
+
+    // Instrução 4: HALT
+    programa[3].opcode = -1;
+    programa[3].add1 = -1;
+    programa[3].add2 = -1;
+    programa[3].add3 = -1;
 
     // Define o programa e inicia a execução
     setPrograma(cpu, programa);
@@ -131,29 +143,40 @@ void programaSoma(RAM *ram, CPU *cpu) {
     printf("Resultado da soma: %d\n\n", getDado(ram, 2));
 }
 
-
 // Programa de SUBTRAÇÃO
 void programaSubtrai(RAM *ram, CPU *cpu) {
     printf("Executando programaSubtrai()...\n");
 
-    criarRAM_vazia(ram, 3);
+    criarRAM_vazia(ram, 4);
 
-    Instrucao programa[3];
-
-    // Instrução: RAM[0] - RAM[1] → RAM[2]
-    programa[0].opcode = 1;
-    programa[0].add1 = 0;
-    programa[0].add2 = 1;
-    programa[0].add3 = 2;
-
-    // Fim
-    programa[1].opcode = -1;
-    programa[1].add1 = -1;
-    programa[1].add2 = -1;
-    programa[1].add3 = -1;
-
+    // Valores iniciais
     setDado(ram, 0, 20);  // RAM[0] = 20
     setDado(ram, 1, 8);   // RAM[1] = 8
+    setDado(ram, 2, 0);   // RAM[2] = resultado
+
+    Instrucao programa[4];
+
+    // COPIA RAM[0] -> REGISTRADOR1
+    programa[0].opcode = 3;
+    programa[0].add1 = 0;
+    programa[0].add2 = 0;
+
+    // COPIA RAM[1] -> REGISTRADOR2
+    programa[1].opcode = 3;
+    programa[1].add1 = 1;
+    programa[1].add2 = 1;
+
+    // SUBTRAI REGISTRADOR1 - REGISTRADOR2 -> RAM[2]
+    programa[2].opcode = 1;
+    programa[2].add1 = 0;
+    programa[2].add2 = 1;
+    programa[2].add3 = 2;
+
+    // HALT
+    programa[3].opcode = -1;
+    programa[3].add1 = -1;
+    programa[3].add2 = -1;
+    programa[3].add3 = -1;
 
     setPrograma(cpu, programa);
     iniciar(cpu, ram);
@@ -375,49 +398,88 @@ void programaRaizQuadrada(RAM *ram, CPU *cpu, int radicando){
 
 // PROGRAMA DE FATORIAL
 void programaFatorial(RAM *ram, CPU *cpu, int numero) {
-
     printf("Executando programaFatorial(%d)...\n", numero);
 
-    criarRAM_vazia(ram, 4);
+    criarRAM_vazia(ram, 6);
     // RAM[0] = número base
     // RAM[1] = contador
     // RAM[2] = resultado parcial
-    // RAM[3] = auxiliar
+    // RAM[3] = auxiliar para multiplicação
+    // RAM[4] = 1 (constante)
+    // RAM[5] = temporário
 
-    setDado(ram, 0, numero); // número
+    setDado(ram, 0, numero);
     setDado(ram, 1, 1);      // contador = 1
     setDado(ram, 2, 1);      // resultado = 1
+    setDado(ram, 4, 1);      // constante 1
+
+    Instrucao programa[8];
 
     // Enquanto contador <= número
     while (getDado(ram, 1) <= getDado(ram, 0)) {
+        // Multiplica resultado * contador usando somas sucessivas
         setDado(ram, 3, 0); // Zera auxiliar
-
-        // Multiplica resultado * contador 
+        
+        // Loop de multiplicação (resultado * contador)
         for (int i = 0; i < getDado(ram, 1); i++) {
-            Instrucao soma[2];
-            soma[0].opcode = 0;  // soma
-            soma[0].add1 = 3;    // RAM[3] += RAM[2]
-            soma[0].add2 = 2;
-            soma[0].add3 = 3;
-            soma[1].opcode = -1;
-
-            setPrograma(cpu, soma);
+            // COPIA RAM[2] -> REGISTRADOR1
+            programa[0].opcode = 3;
+            programa[0].add1 = 0;
+            programa[0].add2 = 2;
+            
+            // COPIA RAM[3] -> REGISTRADOR2
+            programa[1].opcode = 3;
+            programa[1].add1 = 1;
+            programa[1].add2 = 3;
+            
+            // SOMA REGISTRADOR1 + REGISTRADOR2 -> RAM[3]
+            programa[2].opcode = 0;
+            programa[2].add1 = 0;
+            programa[2].add2 = 1;
+            programa[2].add3 = 3;
+            
+            // HALT
+            programa[3].opcode = -1;
+            
+            setPrograma(cpu, programa);
             iniciar(cpu, ram);
         }
 
-        // Atualiza o resultado com o valor de RAM[3]
-        setDado(ram, 2, getDado(ram, 3));
+        // Atualiza resultado: RAM[2] = RAM[3]
+        // COPIA RAM[3] -> REGISTRADOR1
+        programa[0].opcode = 3;
+        programa[0].add1 = 0;
+        programa[0].add2 = 3;
+        
+        // COPIA REGISTRADOR1 -> RAM[2]
+        programa[1].opcode = 2;
+        programa[1].add1 = 0;
+        programa[1].add2 = 2;
+        
+        programa[2].opcode = -1;
+        setPrograma(cpu, programa);
+        iniciar(cpu, ram);
 
-        // Incrementa contador (contador = contador + 1)
-        Instrucao somaContador[2];
-        somaContador[0].opcode = 0;
-        somaContador[0].add1 = 1; // contador
-        somaContador[0].add2 = 3; // RAM[3] = 1
-        somaContador[0].add3 = 1; // salva contador
-        somaContador[1].opcode = -1;
-
-        setDado(ram, 3, 1); // RAM[3] = 1
-        setPrograma(cpu, somaContador);
+        // Incrementa contador: RAM[1] = RAM[1] + 1
+        // COPIA RAM[1] -> REGISTRADOR1
+        programa[0].opcode = 3;
+        programa[0].add1 = 0;
+        programa[0].add2 = 1;
+        
+        // COPIA RAM[4] -> REGISTRADOR2
+        programa[1].opcode = 3;
+        programa[1].add1 = 1;
+        programa[1].add2 = 4;
+        
+        // SOMA REGISTRADOR1 + REGISTRADOR2 -> RAM[1]
+        programa[2].opcode = 0;
+        programa[2].add1 = 0;
+        programa[2].add2 = 1;
+        programa[2].add3 = 1;
+        
+        programa[3].opcode = -1;
+        
+        setPrograma(cpu, programa);
         iniciar(cpu, ram);
     }
 
@@ -426,18 +488,22 @@ void programaFatorial(RAM *ram, CPU *cpu, int numero) {
 
 // PROGRAMA DE POTÊNCIA
 void programaPotencia(RAM *ram, CPU *cpu, int base, int expoente) {
-
     printf("Executando programaPotencia(%d, %d)...\n", base, expoente);
 
-    criarRAM_vazia(ram, 4);
+    criarRAM_vazia(ram, 6);
     // RAM[0] = base
     // RAM[1] = expoente
     // RAM[2] = resultado parcial
-    // RAM[3] = auxiliar
+    // RAM[3] = auxiliar para multiplicação
+    // RAM[4] = 1 (constante)
+    // RAM[5] = temporário
 
     setDado(ram, 0, base);
     setDado(ram, 1, expoente);
     setDado(ram, 2, 1); // resultado começa em 1
+    setDado(ram, 4, 1); // constante 1
+
+    Instrucao programa[8];
 
     // Enquanto expoente > 0
     while (getDado(ram, 1) > 0) {
@@ -445,30 +511,63 @@ void programaPotencia(RAM *ram, CPU *cpu, int base, int expoente) {
 
         // Multiplica resultado * base (por somas sucessivas)
         for (int i = 0; i < getDado(ram, 0); i++) {
-            Instrucao soma[2];
-            soma[0].opcode = 0; // soma
-            soma[0].add1 = 3;   // RAM[3] += RAM[2]
-            soma[0].add2 = 2;
-            soma[0].add3 = 3;
-            soma[1].opcode = -1;
-
-            setPrograma(cpu, soma);
+            // COPIA RAM[2] -> REGISTRADOR1
+            programa[0].opcode = 3;
+            programa[0].add1 = 0;
+            programa[0].add2 = 2;
+            
+            // COPIA RAM[3] -> REGISTRADOR2
+            programa[1].opcode = 3;
+            programa[1].add1 = 1;
+            programa[1].add2 = 3;
+            
+            // SOMA REGISTRADOR1 + REGISTRADOR2 -> RAM[3]
+            programa[2].opcode = 0;
+            programa[2].add1 = 0;
+            programa[2].add2 = 1;
+            programa[2].add3 = 3;
+            
+            programa[3].opcode = -1;
+            
+            setPrograma(cpu, programa);
             iniciar(cpu, ram);
         }
 
-        // Atualiza resultado
-        setDado(ram, 2, getDado(ram, 3));
+        // Atualiza resultado: RAM[2] = RAM[3]
+        // COPIA RAM[3] -> REGISTRADOR1
+        programa[0].opcode = 3;
+        programa[0].add1 = 0;
+        programa[0].add2 = 3;
+        
+        // COPIA REGISTRADOR1 -> RAM[2]
+        programa[1].opcode = 2;
+        programa[1].add1 = 0;
+        programa[1].add2 = 2;
+        
+        programa[2].opcode = -1;
+        setPrograma(cpu, programa);
+        iniciar(cpu, ram);
 
-        // Decrementa expoente (expoente = expoente - 1)
-        Instrucao subtrai[2];
-        subtrai[0].opcode = 1; // subtração
-        subtrai[0].add1 = 1;   // RAM[1] = expoente
-        subtrai[0].add2 = 3;   // usa RAM[3] = 1
-        subtrai[0].add3 = 1;   // salva de volta
-        subtrai[1].opcode = -1;
-
-        setDado(ram, 3, 1); // RAM[3] = 1 temporário
-        setPrograma(cpu, subtrai);
+        // Decrementa expoente: RAM[1] = RAM[1] - 1
+        // COPIA RAM[1] -> REGISTRADOR1
+        programa[0].opcode = 3;
+        programa[0].add1 = 0;
+        programa[0].add2 = 1;
+        
+        // COPIA RAM[4] -> REGISTRADOR2
+        programa[1].opcode = 3;
+        programa[1].add1 = 1;
+        programa[1].add2 = 4;
+        
+        // SUBTRAI REGISTRADOR1 - REGISTRADOR2 -> RAM[1]
+        programa[2].opcode = 1;
+        programa[2].add1 = 0;
+        programa[2].add2 = 1;
+        programa[2].add3 = 1;
+        
+        programa[3].opcode = -1;
+        
+        setPrograma(cpu, programa);
         iniciar(cpu, ram);
     }
 
@@ -479,88 +578,63 @@ void programaPotencia(RAM *ram, CPU *cpu, int base, int expoente) {
 void programaFibonacci(RAM *ram, CPU *cpu, int n) {
     printf("Executando programaFibonacci(%d)...\n", n);
 
-    criarRAM_vazia(ram, 4);
+    criarRAM_vazia(ram, 6);
+
     // RAM[0] = quantidade de termos
     // RAM[1] = termo anterior
     // RAM[2] = termo atual
     // RAM[3] = próximo termo
+    // RAM[4] = contador
+    // RAM[5] = constante 1
 
     setDado(ram, 0, n);
-    setDado(ram, 1, 0); // primeiro termo
-    setDado(ram, 2, 1); // segundo termo
+    setDado(ram, 1, 0); // termo 0
+    setDado(ram, 2, 1); // termo 1
+    setDado(ram, 4, 2); // contador
+    setDado(ram, 5, 1);
 
     printf("Sequência de Fibonacci (%d termos):\n", n);
     printf("%d %d ", getDado(ram, 1), getDado(ram, 2));
 
-    // gera os próximos termos
-    for (int i = 3; i <= getDado(ram, 0); i++) {
-        Instrucao soma[2];
-        soma[0].opcode = 0;  // soma (RAM[3] = RAM[1] + RAM[2])
-        soma[0].add1 = 1;
-        soma[0].add2 = 2;
-        soma[0].add3 = 3;
-        soma[1].opcode = -1;
+    // Array fixo e seguro de instruções
+    Instrucao prog[4];
 
-        setPrograma(cpu, soma);
+    while (getDado(ram, 4) < n) {
+
+        //próximo = anterior + atual
+        prog[0] = (Instrucao){3, 0, 1, 0}; // RAM[1] -> R1
+        prog[1] = (Instrucao){3, 1, 2, 0}; // RAM[2] -> R2
+        prog[2] = (Instrucao){0, 0, 1, 3}; // soma -> RAM[3]
+        prog[3] = (Instrucao){-1, 0, 0, 0};
+
+        setPrograma(cpu, prog);
         iniciar(cpu, ram);
 
         printf("%d ", getDado(ram, 3));
 
-        // Atualiza os termos:
-        setDado(ram, 1, getDado(ram, 2)); // anterior = atual
-        setDado(ram, 2, getDado(ram, 3)); // atual = próximo
+        // anterior = atual
+        // atual = próximo
+        prog[0] = (Instrucao){3, 0, 2, 0}; // RAM[2] -> R1
+        prog[1] = (Instrucao){2, 0, 1, 0}; // R1 -> RAM[1]
+        prog[2] = (Instrucao){3, 0, 3, 0}; // RAM[3] -> R1
+        prog[3] = (Instrucao){2, 0, 2, 0}; // R1 -> RAM[2]
+
+        setPrograma(cpu, prog);
+        iniciar(cpu, ram);
+
+        //contador++
+        prog[0] = (Instrucao){3, 0, 4, 0}; // RAM[4] -> R1
+        prog[1] = (Instrucao){3, 1, 5, 0}; // RAM[5] -> R2
+        prog[2] = (Instrucao){0, 0, 1, 4}; // soma -> RAM[4]
+        prog[3] = (Instrucao){-1, 0, 0, 0};
+
+        setPrograma(cpu, prog);
+        iniciar(cpu, ram);
     }
 
     printf("\n");
 }
 
-// Recebe uma string e a converte em letras maiúsculas
-void programaCapslock(RAM *ram, CPU *cpu, char *texto) {
-
-    int n = strlen(texto);
-
-    // RAM:
-    // [0..n-1] -> caracteres
-    // [n]      -> valor 32 (para subtrair)
-    criarRAM_vazia(ram, n + 1);
-
-    // copia string para RAM 
-    for (int i = 0; i < n; i++) {
-        ram->memoria[i] = (int)texto[i];
-    }
-
-    // armazena o valor 32 (diferença entre 'a' e 'A')
-    ram->memoria[n] = 32;
-
-    // uma instrução fixa: subtrai RAM[i] - RAM[n] -> RAM[i]
-    Instrucao inst[2];
-    inst[0].opcode = 1;   // SUBTRAI
-    inst[0].add2 = n;     // subtrair 32
-    inst[1].opcode = -1;  // HALT
-
-    // percorre cada caractere
-    for (int i = 0; i < n; i++) {
-
-        int c = ram->memoria[i];
-
-        // só altera se for letra minúscula
-        if (c >= 'a' && c <= 'z') {
-
-            inst[0].add1 = i;  
-            inst[0].add3 = i;
-
-            setPrograma(cpu, inst);
-            iniciar(cpu, ram);
-        }
-    }
-
-    // mostra o resultado
-    printf("String convertida para CAPSLOCK: ");
-    for (int i = 0; i < n; i++) {
-        printf("%c", (char)ram->memoria[i]);
-    }
-    printf("\n");
-}
 
 // Executa a média de valores gerados aleatoriamente em um vetor 
 void programaMedia(RAM *ram, CPU *cpu, int tamanhoVetor){
@@ -696,95 +770,237 @@ void programaPorcentagem(RAM *ram, CPU *cpu, int valor, int porcentagem){
 
 }
 
+//PROGRAMA DE MDC
 void programaMdc(RAM *ram, CPU *cpu, int a, int b) {
-
     printf("Executando programaMdc(%d, %d)...\n", a, b);
 
-    criarRAM_vazia(ram, 3);
+    criarRAM_vazia(ram, 4);
     // RAM[0] = a
     // RAM[1] = b
-    // RAM[2] = resto temporário
+    // RAM[2] = resto
+    // RAM[3] = temporário
 
     setDado(ram, 0, a);
     setDado(ram, 1, b);
 
+    Instrucao programa[4];
+
     while (getDado(ram, 1) != 0) {
 
-        // Calcula resto por subtrações sucessivas
-        setDado(ram, 2, getDado(ram, 0)); // resto = a
+        // resto = a
+        setDado(ram, 2, getDado(ram, 0));
 
-        Instrucao sub[2];
-        sub[0].opcode = 1;  // sub
-        sub[0].add1 = 2;    // resto = resto - b
-        sub[0].add2 = 1;
-        sub[0].add3 = 2;
-        sub[1].opcode = -1;
-
+        // while (resto >= b)
         while (getDado(ram, 2) >= getDado(ram, 1)) {
-            setPrograma(cpu, sub);
+
+            // REG1 = RAM[2]  (resto)
+            programa[0].opcode = 3;
+            programa[0].add1   = 0;  // reg1
+            programa[0].add2   = 2;
+
+            // REG2 = RAM[1]  (b)
+            programa[1].opcode = 3;
+            programa[1].add1   = 1;  // reg2
+            programa[1].add2   = 1;
+
+            // RAM[2] = REG1 - REG2
+            programa[2].opcode = 1;  // sub
+            programa[2].add1   = 2;  // destino RAM[2]
+            programa[2].add2   = 0;  // reg1
+            programa[2].add3   = 1;  // reg2
+
+            programa[3].opcode = -1;
+
+            setPrograma(cpu, programa);
             iniciar(cpu, ram);
         }
 
-        // Atualiza: a = b / b = resto
+        // troca a <- b
         setDado(ram, 0, getDado(ram, 1));
+
+        // troca b <- resto
         setDado(ram, 1, getDado(ram, 2));
     }
 
     printf("MDC = %d\n", getDado(ram, 0));
 }
 
+// PROGRAMA DE MMC 
 void programaMmc(RAM *ram, CPU *cpu, int a, int b) {
-
     printf("Executando programaMmc(%d, %d)...\n", a, b);
 
-    RAM ramAux;
+    criarRAM_vazia(ram, 6);
 
-    //calcula o MDC
+    setDado(ram, 0, a);
+    setDado(ram, 1, b);
+
+    //MDC
     programaMdc(ram, cpu, a, b);
     int mdc = getDado(ram, 0);
+    setDado(ram, 2, mdc);
 
-    //Multiplica a * b 
-    programaMultiplica(&ramAux, cpu, a, b);
-    int produto = ramAux.memoria[0];
-    free(ramAux.memoria);
+    //produto = a * b 
+    setDado(ram, 3, 0);  
 
-    //Divide produto / mdc 
-    programaDivide(ram, cpu, produto, mdc);
+    for (int i = 0; i < b; i++) {
+        Instrucao prog[4];
 
-    printf("\nMMC = %d\n", getDado(ram, 2));
+        // REG1 = RAM[3]
+        prog[0].opcode = 3;
+        prog[0].add1   = 0;
+        prog[0].add2   = 3;
+
+        // REG2 = RAM[0]
+        prog[1].opcode = 3;
+        prog[1].add1   = 1;
+        prog[1].add2   = 0;
+
+        // RAM[3] = REG1 + REG2
+        prog[2].opcode = 0;
+        prog[2].add1   = 3;
+        prog[2].add2   = 0;
+        prog[2].add3   = 1;
+
+        prog[3].opcode = -1;
+
+        setPrograma(cpu, prog);
+        iniciar(cpu, ram);
+    }
+
+    //mmc = produto / mdc 
+    setDado(ram, 4, 0);   // mmc
+    setDado(ram, 5, mdc); // divisor
+
+    while (getDado(ram, 3) >= getDado(ram, 5)) {
+        Instrucao prog[4];
+
+        // REG1 = produto
+        prog[0].opcode = 3;
+        prog[0].add1   = 0;
+        prog[0].add2   = 3;
+
+        // REG2 = divisor
+        prog[1].opcode = 3;
+        prog[1].add1   = 1;
+        prog[1].add2   = 5;
+
+        // produto -= divisor
+        prog[2].opcode = 1; // sub
+        prog[2].add1   = 3; // destino
+        prog[2].add2   = 0; // reg1
+        prog[2].add3   = 1; // reg2
+
+        prog[3].opcode = -1;
+        setPrograma(cpu, prog);
+        iniciar(cpu, ram);
+
+        // mmc++
+        setDado(ram, 4, getDado(ram, 4) + 1);
+    }
+
+    printf("MMC(%d, %d) = %d\n", a, b, getDado(ram, 4));
 }
 
+//PROGRAMA DE BHASKARA
 void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c) {
-
     printf("Executando programaBhaskara(%d, %d, %d)...\n", a, b, c);
 
-    // b^2
-    programaMultiplica(ram, cpu, b, b);
-    int b2 = getDado(ram, 0);
+    criarRAM_vazia(ram, 10);
+    // RAM[0] = a
+    // RAM[1] = b
+    // RAM[2] = c
+    // RAM[3] = b²
+    // RAM[4] = 4ac
+    // RAM[5] = delta
+    // RAM[6] = 4 (constante)
+    // RAM[7] = 2 (constante)
+    // RAM[8] = raiz delta
+    // RAM[9] = temporário
 
-    //  4ac 
-    programaMultiplica(ram, cpu, a, c);
-    int ac = getDado(ram, 0);
+    setDado(ram, 0, a);
+    setDado(ram, 1, b);
+    setDado(ram, 2, c);
+    setDado(ram, 6, 4);
+    setDado(ram, 7, 2);
 
-    programaMultiplica(ram, cpu, ac, 4);
-    int quatro_ac = getDado(ram, 0);
+    Instrucao programa[8];
 
-    //delta = b² - 4ac 
-    criarRAM_vazia(ram, 3);
-    setDado(ram, 0, b2);
-    setDado(ram, 1, quatro_ac);
+    // Calcula b²
+    setDado(ram, 3, 0);
+    for (int i = 0; i < b; i++) {
+        // COPIA RAM[3] -> REGISTRADOR1
+        programa[0].opcode = 3;
+        programa[0].add1 = 0;
+        programa[0].add2 = 3;
+        
+        // COPIA RAM[1] -> REGISTRADOR2
+        programa[1].opcode = 3;
+        programa[1].add1 = 1;
+        programa[1].add2 = 1;
+        
+        // SOMA REGISTRADOR1 + REGISTRADOR2 -> RAM[3]
+        programa[2].opcode = 0;
+        programa[2].add1 = 0;
+        programa[2].add2 = 1;
+        programa[2].add3 = 3;
+        
+        programa[3].opcode = -1;
+        
+        setPrograma(cpu, programa);
+        iniciar(cpu, ram);
+    }
 
-    Instrucao sub[2];
-    sub[0].opcode = 1;  // subtrai
-    sub[0].add1 = 0;
-    sub[0].add2 = 1;
-    sub[0].add3 = 0;
-    sub[1].opcode = -1;
+    // Calcula 4ac
+    setDado(ram, 4, 0);
+    for (int i = 0; i < a; i++) {
+        for (int j = 0; j < c; j++) {
+            // COPIA RAM[4] -> REGISTRADOR1
+            programa[0].opcode = 3;
+            programa[0].add1 = 0;
+            programa[0].add2 = 4;
+            
+            // COPIA RAM[6] -> REGISTRADOR2 (4)
+            programa[1].opcode = 3;
+            programa[1].add1 = 1;
+            programa[1].add2 = 6;
+            
+            // SOMA REGISTRADOR1 + REGISTRADOR2 -> RAM[4]
+            programa[2].opcode = 0;
+            programa[2].add1 = 0;
+            programa[2].add2 = 1;
+            programa[2].add3 = 4;
+            
+            programa[3].opcode = -1;
+            
+            setPrograma(cpu, programa);
+            iniciar(cpu, ram);
+        }
+    }
 
-    setPrograma(cpu, sub);
+
+    // Calcula delta = b² - 4ac
+    // COPIA RAM[3] -> REGISTRADOR1 (b²)
+    programa[0].opcode = 3;
+    programa[0].add1 = 0;
+    programa[0].add2 = 3;
+    
+    // COPIA RAM[4] -> REGISTRADOR2 (4ac)
+    programa[1].opcode = 3;
+    programa[1].add1 = 1;
+    programa[1].add2 = 4;
+    
+    // SUBTRAI REGISTRADOR1 - REGISTRADOR2 -> RAM[5] (delta)
+    programa[2].opcode = 1;
+    programa[2].add1 = 0;
+    programa[2].add2 = 1;
+    programa[2].add3 = 5;
+    
+    programa[3].opcode = -1;
+    
+    setPrograma(cpu, programa);
     iniciar(cpu, ram);
 
-    int delta = getDado(ram, 0);
+    int delta = getDado(ram, 5);
     printf("Delta = %d\n", delta);
 
     if (delta < 0) {
@@ -792,29 +1008,38 @@ void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c) {
         return;
     }
 
-    // raiz inteira de delta
+    // Calcula raiz quadrada aproximada de delta
     int raiz = 0;
-    while (raiz * raiz <= delta)
+    while (raiz * raiz <= delta) {
         raiz++;
-
-    raiz--;  // último valor válido
+    }
+    raiz--;
 
     printf("Raiz inteira aproximada = %d\n", raiz);
 
-    // x1 = (-b + raiz) / (2a)
+    // Calcula x1 = (-b + raiz) / (2a)
     int numerador1 = (-b + raiz);
-    programaDivide(ram, cpu, numerador1, 2 * a);
-    int x1 = getDado(ram, 0);
+    int denominador = 2 * a;
+    
+    // Divisão simples
+    int x1 = 0;
+    while (numerador1 >= denominador) {
+        numerador1 -= denominador;
+        x1++;
+    }
 
-    //x2 = (-b - raiz) / (2a)
+    // Calcula x2 = (-b - raiz) / (2a)
     int numerador2 = (-b - raiz);
-    programaDivide(ram, cpu, numerador2, 2 * a);
-    int x2 = getDado(ram, 0);
+    int x2 = 0;
+    while (numerador2 >= denominador) {
+        numerador2 -= denominador;
+        x2++;
+    }
 
     printf("x1 = %d\nx2 = %d\n", x1, x2);
 }
 
-void programaSomaTres(RAM *ram, CPU *cpu, int a, int b, int c){
+void programaSomaTres(RAM * ram, CPU *cpu, int a, int b, int c){
 
     Instrucao trecho1[3];
     Instrucao inst1, inst2, inst3;
@@ -1005,8 +1230,5 @@ void programaOR(RAM *ram, CPU *cpu, int a, int b)
     printf("Resultado OR = 0\n");
 }
 
-
-
 // Grupo 10 - Otávio Enrique Lopes de Lima, Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes
-
 

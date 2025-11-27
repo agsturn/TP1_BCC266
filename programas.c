@@ -71,7 +71,7 @@ int main() {
     //programaFibonacci(&ram, &cpu, 8);
     
     // Executa um exemplo de capslock
-    // pogramaCapslock(&ram, &cpu, "eXemPLo");
+    // programaCapslock(&ram, &cpu, "eXemPLo");
 
     // Executa a média de valores gerados aleatoriamente em um vetor 
     // programaMedia(&ram, &cpu, 5);
@@ -1835,3 +1835,4 @@ void programaOR(RAM *ram, CPU *cpu, int a, int b)
 }
 
 // Grupo 10 - Otávio Enrique Lopes de Lima, Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes
+

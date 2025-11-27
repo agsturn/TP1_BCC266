@@ -978,6 +978,55 @@ void programaFibonacci(RAM *ram, CPU *cpu, int n) {
     printf("\n");
 }
 
+// converte uma string para letras maiúsculas usando opcode sub
+void programaCapslock(RAM *ram, CPU *cpu, char *texto) {
+
+    int n = strlen(texto);
+
+    // ram layout:
+    // [0 .. n-1] -> texto original
+    // [n]        -> valor 32 (diferença entre 'a' e 'a')
+
+    criarRAM_vazia(ram, n + 1);
+
+    // copiar string para a ram usando setDado
+    for (int i = 0; i < n; i++) {
+        setDado(ram, i, (int)texto[i]);
+    }
+
+    // guardar valor fixo 32
+    setDado(ram, n, 32);
+
+    // criar instruções
+    Instrucao inst[2];
+
+    inst[0].opcode = 1;   // sub opcode
+    inst[1].opcode = -1;  // halt (ajuste conforme seu cpu)
+
+    // percorrer ram em busca de letras minúsculas
+    for (int i = 0; i < n; i++) {
+
+        int c = getDado(ram, i);
+
+        // se for minúscula, converte
+        if (c >= 'a' && c <= 'z') {
+
+            inst[0].add1 = i;  // endereço do caractere
+            inst[0].add2 = n;  // endereço contendo 32
+            inst[0].add3 = i;  // resultado volta no mesmo endereço
+
+            setPrograma(cpu, inst);
+            iniciar(cpu, ram);
+        }
+    }
+
+    // exibe resultado
+    printf("string convertida para capslock: ");
+    for (int i = 0; i < n; i++) {
+        printf("%c", (char)getDado(ram, i));
+    }
+    printf("\n");
+}
 
 // Executa a média de valores gerados aleatoriamente em um vetor 
 void programaMedia(RAM *ram, CPU *cpu, int tamanhoVetor){
@@ -1835,4 +1884,5 @@ void programaOR(RAM *ram, CPU *cpu, int a, int b)
 }
 
 // Grupo 10 - Otávio Enrique Lopes de Lima, Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes
+
 

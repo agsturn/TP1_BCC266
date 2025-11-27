@@ -4,11 +4,13 @@
 #include "maquina.h"
 
 /* OPCODES:
-    //-1 -> halt
-    // 0 -> soma
-    // 1 -> subtrai
-    // 2 -> copia do registrador para RAM
-    // 3 -> copia da RAM para o registrador
+    -1 -> halt
+     0 -> soma
+     1 -> subtrai
+     2 -> copia do registrador para RAM
+     3 -> copia da RAM para o registrador
+     4 -> salva conteudo externo no registrador
+     5 -> obtem conteudo do registrador
 */
 
 // Declaração das funções dos programas
@@ -51,13 +53,13 @@ int main() {
     // programaMultiplica(&ram, &cpu, 19, 23);
 
     // Executa um exemplo de divisão
-    // programaDivide(&ram, &cpu, 500, 19);
+    // programaDivide(&ram, &cpu, 500, 3);
 
     // Calcula resto de divisão
     // programaRestoDivisao(&ram, &cpu, 101, 5);
 
     // Executa um exemplo de raíz quadrada
-    // programaRaizQuadrada(&ram, &cpu, 25);
+    // programaRaizQuadrada(&ram, &cpu, 169);
 
     // Executa um exemplo de fatorial
     // programaFatorial(&ram, &cpu, 5);
@@ -84,13 +86,13 @@ int main() {
     // deu merda programaMmc(&ram,&cpu,36,44);
 
     //Execute um exemplo de bhaskara
-    programaBhaskara(&ram,&cpu, 2 ,3,-5);
+    // programaBhaskara(&ram,&cpu, 2 ,3,-5);
 
     // Executa um exemplo de soma de três números
     // programaSomaTres(&ram, &cpu, 1, 2, 3);
 
     //Calcula a área de um triângulo a partir da fórmula de Heron a partir do comprimento dos lados
-    //programaFormulaHeron(&ram, &cpu, 3, 4, 5);
+    programaFormulaHeron(&ram, &cpu, 3, 4, 5);
 
     // Executa um exemplo da função OR
     // programaOR(&ram, &cpu, 0, 1);
@@ -218,59 +220,378 @@ void programaMultiplica(RAM *ram, CPU *cpu, int multiplicando, int multiplicador
 
     criarRAM_vazia(ram, 2);
     
-    setDado(ram, 0, multiplicando);
-    setDado(ram, 1, multiplicando);
+    Instrucao trecho1[3];
+    Instrucao inst1, inst2, inst3, inst4;
 
-    Instrucao trecho1[2];
-    Instrucao inst1, inst2;
-
-    inst1.opcode = 0;
+    inst1.opcode = 4;
     inst1.add1 = 0;
-    inst1.add2 = 1;
-    inst1.add3 = 0;
+    inst1.add2 = multiplicando;
+    inst1.add3 = -1;
 
-    inst2.opcode = -1;
-    inst2.add1 = -1;
-    inst2.add2 = -1;
+    inst2.opcode = 2;
+    inst2.add1 = 0;
+    inst2.add2 = 0;
     inst2.add3 = -1;
+
+    inst3.opcode = 2;
+    inst3.add1 = 0;
+    inst3.add2 = 1;
+    inst3.add3 = -1;
+
+    inst4.opcode = -1;
+    inst4.add1 = -1;
+    inst4.add2 = -1;
+    inst4.add3 = -1;
 
     trecho1[0] = inst1;
     trecho1[1] = inst2;
+    trecho1[2] = inst3;
+    trecho1[3] = inst4;
+
+    setPrograma(cpu, trecho1);
+    iniciar(cpu, ram);
+
+    Instrucao trecho2[2];
+    Instrucao inst6, inst7;
+
+    inst6.opcode = 0;
+    inst6.add1 = 0;
+    inst6.add2 = 1;
+    inst6.add3 = 0;
+
+    inst7.opcode = -1;
+    inst7.add1 = -1;
+    inst7.add2 = -1;
+    inst7.add3 = -1;
+
+    trecho2[0] = inst6;
+    trecho2[1] = inst7;
 
     for(int i = 1; i < multiplicador; i++){
-        setPrograma(cpu, trecho1);
+        setPrograma(cpu, trecho2);
         iniciar(cpu, ram);
     }
 
-    Instrucao inst3;
+    Instrucao trecho3[3];
+    Instrucao inst8, inst9, inst10;
 
-    inst3.add1 = getDado(ram, trecho1[0].add1);
+    inst8.opcode = 4;
+    inst8.add1 = 1;
+    inst8.add2 = multiplicador;
+    inst8.add3 = -1;
 
-    printf("\nResultado da multiplicacao: %d\n", inst3.add1);
+    inst9.opcode = 3;
+    inst9.add1 = 0;
+    inst9.add2 = 0;
+    inst9.add3 = -1;
+
+    inst10.opcode = -1;
+    inst10.add1 = -1;
+    inst10.add2 = -1;
+    inst10.add3 = -1;
+
+    trecho3[0] = inst8;
+    trecho3[1] = inst9;
+    trecho3[2] = inst10;
+
+    setPrograma(cpu, trecho3);
+    iniciar(cpu, ram);
+
+    printf("\nResultado da multiplicacao: %d\n", cpu->registrador1);
 }
 
 //Programa que mostra a parte inteira da divisão de dois números inteiros
 void programaDivide(RAM *ram, CPU *cpu, int dividendo, int divisor){
 
     criarRAM_vazia(ram, 4);
+
+    Instrucao trecho1[9];
+    Instrucao inst1, inst2, inst3, inst4, inst5, inst6, inst7, inst8, inst9;
+
+    inst1.opcode = 4;
+    inst1.add1 = 0;
+    inst1.add2 = dividendo;
+    inst1.add3 = -1;
+
+    inst2.opcode = 4;
+    inst2.add1 = 1;
+    inst2.add2 = divisor;
+    inst2.add3 = -1;
+
+    inst3.opcode = 2;
+    inst3.add1 = 0;
+    inst3.add2 = 0;
+    inst3.add3 = -1;
+
+    inst4.opcode = 2;
+    inst4.add1 = 1;
+    inst4.add2 = 1;
+    inst4.add3 = -1;
+
+    inst5.opcode = 4;
+    inst5.add1 = 0;
+    inst5.add2 = 0;
+    inst5.add3 = -1;
+
+    inst6.opcode = 2;
+    inst6.add1 = 0;
+    inst6.add2 = 2;
+    inst6.add3 = -1;
+
+    inst7.opcode = 4;
+    inst7.add1 = 1;
+    inst7.add2 = 1;
+    inst7.add3 = -1;
+
+    inst8.opcode = 2;
+    inst8.add1 = 1;
+    inst8.add2 = 3;
+    inst8.add3 = -1;
     
-    setDado(ram, 0, dividendo);
-    setDado(ram, 1, divisor);
-    setDado(ram, 2, 0);
-    setDado(ram, 3, 1);
+    inst9.opcode = -1;
+    inst9.add1 = -1;
+    inst9.add2 = -1;
+    inst9.add3 = -1;
+
+    trecho1[0] = inst1;
+    trecho1[1] = inst2;
+    trecho1[2] = inst3;
+    trecho1[3] = inst4;
+    trecho1[4] = inst5;
+    trecho1[5] = inst6;
+    trecho1[6] = inst7;
+    trecho1[7] = inst8;
+    trecho1[8] = inst9;
+
+    setPrograma(cpu, trecho1);
+    iniciar(cpu, ram);
+
+    Instrucao trecho2[2];
+    Instrucao inst10, inst11, inst12;
+
+    inst10.opcode = 3;
+    inst10.add1 = 0;
+    inst10.add2 = 0;
+    inst10.add3 = -1;
+
+    inst11.opcode = 3;
+    inst11.add1 = 1;
+    inst11.add2 = 1;
+    inst11.add3 = -1;
+
+    inst12.opcode = -1;
+    inst12.add1 = -1;
+    inst12.add2 = -1;
+    inst12.add3 = -1;
+
+    trecho2[0] = inst10;
+    trecho2[1] = inst11;
+    trecho2[2] = inst12;
+
+    setPrograma(cpu, trecho2);
+    iniciar(cpu, ram);
+
+    Instrucao trecho3[5];
+    Instrucao inst13, inst14, inst15, inst16, inst17;
+
+    inst13.opcode = 1;
+    inst13.add1 = 0;
+    inst13.add2 = 1;
+    inst13.add3 = 0;
+
+    inst14.opcode = 0;
+    inst14.add1 = 2;
+    inst14.add2 = 3;
+    inst14.add3 = 2;
+    
+    inst15.opcode = 3;
+    inst15.add1 = 0;
+    inst15.add2 = 0;
+    inst15.add3 = -1;
+
+    inst16.opcode = 3;
+    inst16.add1 = 1;
+    inst16.add2 = 1;
+    inst16.add3 = -1;
+
+    inst17.opcode = -1;
+    inst17.add1 = -1;
+    inst17.add2 = -1;
+    inst17.add3 = -1;
+
+    trecho3[0] = inst13;
+    trecho3[1] = inst14;
+    trecho3[2] = inst15;
+    trecho3[3] = inst16;
+    trecho3[4] = inst17;
+
+    while(cpu->registrador1 >= cpu->registrador2){
+        setPrograma(cpu, trecho3);
+        iniciar(cpu, ram);
+    }
+    
+    Instrucao trecho4[2];
+    Instrucao inst18, inst19;
+
+    inst18.opcode = 3;
+    inst18.add1 = 0;
+    inst18.add2 = 2;
+    inst18.add3 = -1;
+
+    inst19.opcode = -1;
+    inst19.add1 = -1;
+    inst19.add2 = -1;
+    inst19.add3 = -1;
+
+    trecho4[0] = inst18;
+    trecho4[1] = inst19;
+
+    setPrograma(cpu, trecho4);
+    iniciar(cpu, ram);
+
+    printf("\nResultado da divisao: %d\n", cpu->registrador1);
+
+}
+
+//Programa que calcula o resto da divisão de dois números inteiros
+void programaRestoDivisao(RAM *ram, CPU *cpu, int dividendo, int divisor){
+
+    criarRAM_vazia(ram, 2);
+
+    Instrucao trecho1[5];
+    Instrucao inst1, inst2, inst3, inst4, inst5;
+
+    inst1.opcode = 4;
+    inst1.add1 = 0;
+    inst1.add2 = dividendo;
+    inst1.add3 = -1;
+
+    inst2.opcode = 4;
+    inst2.add1 = 1;
+    inst2.add2 = divisor;
+    inst2.add3 = -1;
+
+    inst3.opcode = 2;
+    inst3.add1 = 0;
+    inst3.add2 = 0;
+    inst3.add3 = -1;
+
+    inst4.opcode = 2;
+    inst4.add1 = 1;
+    inst4.add2 = 1;
+    inst4.add3 = -1;
+
+    inst5.opcode = -1;
+    inst5.add1 = -1;
+    inst5.add2 = -1;
+    inst5.add3 = -1;
+
+    trecho1[0] = inst1;
+    trecho1[1] = inst2;
+    trecho1[2] = inst3;
+    trecho1[3] = inst4;
+    trecho1[4] = inst5;
+
+    setPrograma(cpu, trecho1);
+    iniciar(cpu, ram);
+
+    Instrucao trecho2[2];
+    Instrucao inst6, inst7, inst8;
+
+    inst6.opcode = 3;
+    inst6.add1 = 0;
+    inst6.add2 = 0;
+    inst6.add3 = -1;
+
+    inst7.opcode = 3;
+    inst7.add1 = 1;
+    inst7.add2 = 1;
+    inst7.add3 = -1;
+
+    inst8.opcode = -1;
+    inst8.add1 = -1;
+    inst8.add2 = -1;
+    inst8.add3 = -1;
+
+    trecho2[0] = inst6;
+    trecho2[1] = inst7;
+    trecho2[2] = inst8;
+
+    setPrograma(cpu, trecho2);
+    iniciar(cpu, ram);
+
+    Instrucao trecho3[4];
+    Instrucao inst9, inst10, inst11, inst12;
+
+    inst9.opcode = 1;
+    inst9.add1 = 0;
+    inst9.add2 = 1;
+    inst9.add3 = 0;
+
+    inst10.opcode = 3;
+    inst10.add1 = 0;
+    inst10.add2 = 0;
+    inst10.add3 = -1;
+
+    inst11.opcode = 3;
+    inst11.add1 = 1;
+    inst11.add2 = 1;
+    inst11.add3 = -1;
+
+    inst12.opcode = -1;
+    inst12.add1 = -1;
+    inst12.add2 = -1;
+    inst12.add3 = -1;
+
+    trecho3[0] = inst9;
+    trecho3[1] = inst10;
+    trecho3[2] = inst11;
+    trecho3[3] = inst12;
+
+    while(cpu->registrador1 >= cpu->registrador2){
+        setPrograma(cpu, trecho3);
+        iniciar(cpu, ram);
+    }
+
+    Instrucao trecho4[2];
+    Instrucao inst13, inst14;
+
+    inst13.opcode = 3;
+    inst13.add1 = 0;
+    inst13.add2 = 0;
+    inst13.add3 = -1;
+
+    inst14.opcode = -1;
+    inst14.add1 = -1;
+    inst14.add2 = -1;
+    inst14.add3 = -1;
+
+    trecho4[0] = inst13;
+    trecho4[1] = inst14;
+
+    setPrograma(cpu, trecho4);
+    iniciar(cpu, ram);
+
+    printf("\nResto da divisao: %d\n", cpu->registrador1);
+}
+
+//Calcula a raíz quadrada
+void programaRaizQuadrada(RAM *ram, CPU *cpu, int radicando){
+
+    criarRAM_vazia(ram, 1);
 
     Instrucao trecho1[3];
     Instrucao inst1, inst2, inst3;
 
-    inst1.opcode = 1;
+    inst1.opcode = 4;
     inst1.add1 = 0;
-    inst1.add2 = 1;
-    inst1.add3 = 0;
+    inst1.add2 = 0;
+    inst1.add3 = -1;
 
-    inst2.opcode = 0;
-    inst2.add1 = 2;
-    inst2.add2 = 3;
-    inst2.add3 = 2;
+    inst2.opcode = 4;
+    inst2.add1 = 1;
+    inst2.add2 = 1;
+    inst2.add3 = -1;
 
     inst3.opcode = -1;
     inst3.add1 = -1;
@@ -281,119 +602,141 @@ void programaDivide(RAM *ram, CPU *cpu, int dividendo, int divisor){
     trecho1[1] = inst2;
     trecho1[2] = inst3;
 
-    while(getDado(ram, trecho1[0].add1) >= getDado(ram, trecho1[0].add2)){
-        setPrograma(cpu, trecho1);
-        iniciar(cpu, ram);
-    }
-    
-    Instrucao inst4;
-    inst4.add1 = getDado(ram, trecho1[1].add3);
-
-    printf("\nResultado da divisao: %d\n", inst4.add1);
-
-}
-
-//Programa que calcula o resto da divisão de dois números inteiros
-void programaRestoDivisao(RAM *ram, CPU *cpu, int dividendo, int divisor){
-
-    criarRAM_vazia(ram, 2);
-    setDado(ram, 0, dividendo);
-    setDado(ram, 1, divisor);
-
-    Instrucao trecho1[2];
-    Instrucao inst1, inst2;
-
-    inst1.opcode = 1;
-    inst1.add1 = 0;
-    inst1.add2 = 1;
-    inst1.add3 = 0;
-
-    inst2.opcode = -1;
-    inst2.add1 = -1;
-    inst2.add2 = -1;
-    inst2.add3 = -1;
-
-    trecho1[0] = inst1;
-    trecho1[1] = inst2;
-
-    while(getDado(ram, trecho1[0].add1) >= getDado(ram, trecho1[0].add2)){
-        setPrograma(cpu, trecho1);
-        iniciar(cpu, ram);
-    }
-
-    Instrucao inst3;
-    inst3.add1 = getDado(ram, trecho1[0].add1);
-
-    printf("\nResto da divisao: %d\n", inst3.add1);
-}
-
-//Calcula a raíz quadrada
-void programaRaizQuadrada(RAM *ram, CPU *cpu, int radicando){
-
-    Instrucao inst1, inst2;
-    inst1.add1 = 0;
-    inst2.add1 = 1;
-
-    while(inst1.add1 <= radicando){
-        Instrucao trecho1[3];
-        Instrucao inst3, inst4;
-        programaMultiplica(ram, cpu, inst2.add1, inst2.add1);
-        
-        inst1.add1 = getDado(ram, 0);
-        setDado(ram, 0, inst2.add1);
-        setDado(ram, 1, 1);
-
-        inst3.opcode = 0;
-        inst3.add1 = 0;
-        inst3.add2 = 1;
-        inst3.add3 = 0;
-
-        inst4.opcode = -1;
-        inst4.add1 = -1;
-        inst4.add2 = -1;
-        inst4.add3 = -1;
-
-        trecho1[0] = inst3;
-        trecho1[1] = inst4;
-
-        setPrograma(cpu, trecho1);
-        iniciar(cpu, ram);
-
-        inst2.add1 = getDado(ram, 0);
-    }
-
-    
-    Instrucao trecho2[3];
-    Instrucao inst5, inst6, inst7;
-
-    inst5.opcode = 1;
-    inst5.add1 = 0;
-    inst5.add2 = 1;
-    inst5.add3 = 0;
-
-    inst6.opcode = 1;
-    inst6.add1 = 0;
-    inst6.add2 = 1;
-    inst6.add3 = 0;
-
-    inst7.opcode = -1;
-    inst7.add1 = -1;
-    inst7.add2 = -1;
-    inst7.add3 = -1;
-
-    trecho2[0] = inst5;
-    trecho2[1] = inst6;
-    trecho2[2] = inst7;
-
-    setPrograma(cpu, trecho2);
+    setPrograma(cpu, trecho1);
     iniciar(cpu, ram);
 
-    
-    Instrucao inst8;
-    inst8.add1 = getDado(ram, 0);
-    
+    free(ram->memoria);
 
-    printf("\nResultado da raiz quadrada: %d\n", inst8.add1);
+    while(cpu->registrador1 <= radicando){
+
+        programaMultiplica(ram, cpu, cpu->registrador2, cpu->registrador2);
+        free(ram->memoria);
+
+        criarRAM_vazia(ram, 3);
+
+        Instrucao trecho2[6];
+        Instrucao inst6, inst7, inst8, inst9, inst10;
+
+        inst6.opcode = 2;
+        inst6.add1 = 0;
+        inst6.add2 = 0;
+        inst6.add3 = -1;
+
+        inst7.opcode = 2;
+        inst7.add1 = 1;
+        inst7.add2 = 1;
+        inst7.add3 = -1;
+
+        inst8.opcode = 4;
+        inst8.add1 = 0;
+        inst8.add2 = 1;
+        inst8.add3 = -1;
+
+        inst9.opcode = 2;
+        inst9.add1 = 0;
+        inst9.add2 = 2;
+        inst9.add3 = -1;
+        
+        inst10.opcode = -1;
+        inst10.add1 = -1;
+        inst10.add2 = -1;
+        inst10.add3 = -1;
+
+        trecho2[0] = inst6;
+        trecho2[1] = inst7;
+        trecho2[2] = inst8;
+        trecho2[3] = inst9;
+        trecho2[4] = inst10;
+
+        setPrograma(cpu, trecho2);
+        iniciar(cpu, ram);
+
+        Instrucao trecho3[5];
+        Instrucao inst11, inst12, inst13, inst14;
+
+        inst11.opcode = 0;
+        inst11.add1 = 1;
+        inst11.add2 = 2;
+        inst11.add3 = 1;
+
+        inst12.opcode = 3;
+        inst12.add1 = 1;
+        inst12.add2 = 1;
+        inst12.add3 = -1;
+
+        inst13.opcode = 3;
+        inst13.add1 = 0;
+        inst13.add2 = 0;
+        inst13.add3 = -1;
+
+        inst14.opcode = -1;
+        inst14.add1 = -1;
+        inst14.add2 = -1;
+        inst14.add3 = -1;
+
+        trecho3[0] = inst11;
+        trecho3[1] = inst12;
+        trecho3[2] = inst13;
+        trecho3[3] = inst14;
+
+        setPrograma(cpu, trecho3);
+        iniciar(cpu, ram);
+
+        free(ram->memoria);
+    }
+    
+    criarRAM_vazia(ram, 2);
+
+    Instrucao trecho4[7];
+    Instrucao inst15, inst16, inst17, inst18, inst19, inst20, inst21;
+
+    inst15.opcode = 2;
+    inst15.add1 = 1;
+    inst15.add2 = 0;
+    inst15.add3 = -1;
+
+    inst16.opcode = 4;
+    inst16.add1 = 1;
+    inst16.add2 = 1;
+    inst16.add3 = -1;
+
+    inst17.opcode = 2;
+    inst17.add1 = 1;
+    inst17.add2 = 1;
+    inst17.add3 = -1;
+
+    inst18.opcode = 1;
+    inst18.add1 = 0;
+    inst18.add2 = 1;
+    inst18.add3 = 0;
+
+    inst19.opcode = 1;
+    inst19.add1 = 0;
+    inst19.add2 = 1;
+    inst19.add3 = 0;
+
+    inst20.opcode = 3;
+    inst20.add1 = 0;
+    inst20.add2 = 0;
+    inst20.add3 = -1;
+
+    inst21.opcode = -1;
+    inst21.add1 = -1;
+    inst21.add2 = -1;
+    inst21.add3 = -1;
+
+    trecho4[0] = inst15;
+    trecho4[1] = inst16;
+    trecho4[2] = inst17;
+    trecho4[3] = inst18;
+    trecho4[4] = inst19;
+    trecho4[5] = inst20;
+    trecho4[6] = inst21;
+
+    setPrograma(cpu, trecho4);
+    iniciar(cpu, ram);
+    
+    printf("\nResultado da raiz quadrada: %d\n", cpu->registrador1);
 }
 
 // PROGRAMA DE FATORIAL
@@ -1041,125 +1384,386 @@ void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c) {
 
 void programaSomaTres(RAM * ram, CPU *cpu, int a, int b, int c){
 
-    Instrucao trecho1[3];
-    Instrucao inst1, inst2, inst3;
+    Instrucao trecho1[7];
+    Instrucao inst1, inst2, inst3, inst4, inst5, inst6, inst7;
 
     criarRAM_vazia(ram, 3);
-    setDado(ram, 0, a);
-    setDado(ram, 1, b);
-    setDado(ram, 2, c);
 
-    inst1.opcode = 0;
+    inst1.opcode = 4;
     inst1.add1 = 0;
-    inst1.add2 = 1;
-    inst1.add3 = 0;
+    inst1.add2 = a;
+    inst1.add3 = -1;
 
-    inst2.opcode = 0;
-    inst2.add1 = 0;
-    inst2.add2 = 2;
-    inst2.add3 = 0;
+    inst2.opcode = 4;
+    inst2.add1 = 1;
+    inst2.add2 = b;
+    inst2.add3 = -1;
 
-    inst3.opcode = -1;
-    inst3.add1 = -1;
-    inst3.add2 = -1;
+    inst3.opcode = 2;
+    inst3.add1 = 0;
+    inst3.add2 = 0;
     inst3.add3 = -1;
+
+    inst4.opcode = 2;
+    inst4.add1 = 1;
+    inst4.add2 = 1;
+    inst4.add3 = -1;
+
+    inst5.opcode = 4;
+    inst5.add1 = 0;
+    inst5.add2 = c;
+    inst5.add3 = -1;
+
+    inst6.opcode = 2;
+    inst6.add1 = 0;
+    inst6.add2 = 2;
+    inst6.add3 = -1;
+
+    inst7.opcode = -1;
+    inst7.add1 = -1;
+    inst7.add2 = -1;
+    inst7.add3 = -1;
 
     trecho1[0] = inst1;
     trecho1[1] = inst2;
     trecho1[2] = inst3;
+    trecho1[3] = inst4;
+    trecho1[4] = inst5;
+    trecho1[5] = inst6;
+    trecho1[6] = inst7;
 
     setPrograma(cpu, trecho1);
     iniciar(cpu, ram);
 
-    Instrucao inst4;
-    inst4.add1 = getDado(ram, 0);
+    Instrucao trecho2[3];
+    Instrucao inst8, inst9, inst10;
 
-    printf("\nO resultado da soma eh: %d\n", inst4.add1);
+    inst8.opcode = 0;
+    inst8.add1 = 0;
+    inst8.add2 = 1;
+    inst8.add3 = 0;
+
+    inst9.opcode = 0;
+    inst9.add1 = 0;
+    inst9.add2 = 2;
+    inst9.add3 = 0;
+
+    inst10.opcode = -1;
+    inst10.add1 = -1;
+    inst10.add2 = -1;
+    inst10.add3 = -1;
+
+    trecho2[0] = inst8;
+    trecho2[1] = inst9;
+    trecho2[2] = inst10;
+
+    setPrograma(cpu, trecho2);
+    iniciar(cpu, ram);
+
+    Instrucao trecho3[2];
+    Instrucao inst11, inst12;
+
+    inst11.opcode = 3;
+    inst11.add1 = 0;
+    inst11.add2 = 0;
+    inst11.add3 = -1;
+
+    inst12.opcode = -1;
+    inst12.add1 = -1;
+    inst12.add2 = -1;
+    inst12.add3 = -1;
+
+    trecho3[0] = inst11;
+    trecho3[1] = inst12;
+
+    setPrograma(cpu, trecho3);
+    iniciar(cpu, ram);
+
+    printf("\nO resultado da soma eh: %d\n", cpu->registrador1);
 }
 
 void programaFormulaHeron(RAM *ram, CPU *cpu, int a, int b, int c){
 
-    Instrucao inst1, inst2;
-
     //Calculando o semi-perímetro
     programaSomaTres(ram, cpu, a, b, c);
-
-    inst1.add1 = getDado(ram, 0);
     free(ram->memoria);
 
-    programaDivide(ram, cpu, inst1.add1, 2);
+    programaDivide(ram, cpu, cpu->registrador1, 2);
 
-    inst2.add1 = getDado(ram, 2);
+    Instrucao trecho1[8];
+    Instrucao inst1, inst2, inst3, inst4, inst5, inst6, inst7, inst8;
 
-    setDado(ram, 0, inst2.add1);
-    setDado(ram, 1, a);
-    setDado(ram, 2, b);
-    setDado(ram, 3, c);
+    inst1.opcode = 2;
+    inst1.add1 = 0;
+    inst1.add2 = 0;
+    inst1.add3 = -1;
 
-    Instrucao trecho1[4];
-    Instrucao  inst3, inst4, inst5, inst6;
-    inst3.opcode = 1;
-    inst3.add1 = 0;
-    inst3.add2 = 1;
-    inst3.add3 = 1;
+    inst2.opcode = 4;
+    inst2.add1 = 0;
+    inst2.add2 = a;
+    inst2.add3 = -1;
 
-    inst4.opcode = 1;
+    inst3.opcode = 4;
+    inst3.add1 = 1;
+    inst3.add2 = b;
+    inst3.add3 = -1;
+
+    inst4.opcode = 2;
     inst4.add1 = 0;
-    inst4.add2 = 2;
-    inst4.add3 = 2;
+    inst4.add2 = 1;
+    inst4.add3 = -1;
 
-    inst5.opcode = 1;
-    inst5.add1 = 0;
-    inst5.add2 = 3;
-    inst5.add3 = 3;
+    inst5.opcode = 2;
+    inst5.add1 = 1;
+    inst5.add2 = 2;
+    inst5.add3 = -1;
 
-    inst6.opcode = -1;
-    inst6.add1 = -1;
-    inst6.add2 = -1;
+    inst6.opcode = 4;
+    inst6.add1 = 0;
+    inst6.add2 = c;
     inst6.add3 = -1;
 
-    trecho1[0] = inst3;
-    trecho1[1] = inst4;
-    trecho1[2] = inst5;
-    trecho1[3] = inst6;
+    inst7.opcode = 2;
+    inst7.add1 = 0;
+    inst7.add2 = 3;
+    inst7.add3 = -1;
+
+    inst8.opcode = -1;
+    inst8.add1 = -1;
+    inst8.add2 = -1;
+    inst8.add3 = -1;
+
+    trecho1[0] = inst1;
+    trecho1[1] = inst2;
+    trecho1[2] = inst3;
+    trecho1[3] = inst4;
+    trecho1[4] = inst5;
+    trecho1[5] = inst6;
+    trecho1[6] = inst7;
+    trecho1[7] = inst8;
 
     setPrograma(cpu, trecho1);
     iniciar(cpu, ram);
 
-    Instrucao inst7, inst8, inst9;
+    Instrucao trecho2[4];
+    Instrucao  inst9, inst10, inst11, inst12;
 
-    inst7.add1 = getDado(ram, 1);
-    inst8.add1 = getDado(ram, 2);
-    inst9.add1 = getDado(ram, 3);
+    inst9.opcode = 1;
+    inst9.add1 = 0;
+    inst9.add2 = 1;
+    inst9.add3 = 1;
+
+    inst10.opcode = 1;
+    inst10.add1 = 0;
+    inst10.add2 = 2;
+    inst10.add3 = 2;
+
+    inst11.opcode = 1;
+    inst11.add1 = 0;
+    inst11.add2 = 3;
+    inst11.add3 = 3;
+
+    inst12.opcode = -1;
+    inst12.add1 = -1;
+    inst12.add2 = -1;
+    inst12.add3 = -1;
+
+    trecho2[0] = inst9;
+    trecho2[1] = inst10;
+    trecho2[2] = inst11;
+    trecho2[3] = inst12;
+
+    setPrograma(cpu, trecho2);
+    iniciar(cpu, ram);
+
+    Instrucao trecho3[9];
+    Instrucao inst13, inst14, inst15, inst16, inst17, inst18, inst19, inst20, inst21;
+
+    inst13.opcode = 3;
+    inst13.add1 = 0;
+    inst13.add2 = 0;
+    inst13.add3 = -1;
+
+    inst14.opcode = 5;
+    inst14.add1 = 0;
+    inst14.add2 = -1;
+    inst14.add3 = -1;
+
+    inst15.opcode = 3;
+    inst15.add1 = 0;
+    inst15.add2 = 1;
+    inst15.add3 = -1;
+
+    inst16.opcode = 5;
+    inst16.add1 = 0;
+    inst16.add2 = -1;
+    inst16.add3 = -1;
+
+    inst17.opcode = 3;
+    inst17.add1 = 0;
+    inst17.add2 = 2;
+    inst17.add3 = -1;
+
+    inst18.opcode = 5;
+    inst18.add1 = 0;
+    inst18.add2 = -1;
+    inst18.add3 = -1;
+
+    inst19.opcode = 3;
+    inst19.add1 = 0;
+    inst19.add2 = 3;
+    inst19.add3 = -1;
+
+    inst20.opcode = 5;
+    inst20.add1 = 0;
+    inst20.add2 = -1;
+    inst20.add3 = -1;
+
+    inst21.opcode = -1;
+    inst21.add1 = -1;
+    inst21.add2 = -1;
+    inst21.add3 = -1;
+
+    trecho3[0] = inst13;
+    trecho3[1] = inst14;
+    trecho3[2] = inst15;
+    trecho3[3] = inst16;
+    trecho3[4] = inst17;
+    trecho3[5] = inst18;
+    trecho3[6] = inst19;
+    trecho3[7] = inst20;
+    trecho3[8] = inst21;
+
+    setPrograma(cpu, trecho3);
+    iniciar(cpu, ram);
+
+    Instrucao inst22, inst23, inst24, inst25;
+
+    inst22.add2 = cpu->programa[1].add2;
+    inst23.add2 = cpu->programa[3].add2;
+    inst24.add2 = cpu->programa[5].add2;
+    inst25.add2 = cpu->programa[7].add2;
 
     free(ram->memoria);
 
-    programaMultiplica(ram, cpu, inst2.add1, inst7.add1);
+    programaMultiplica(ram, cpu, inst23.add2, inst22.add2);
 
-    Instrucao inst10;
-    inst10.add1 = getDado(ram, 0);
+    Instrucao trecho4[3];
+    Instrucao inst26, inst27, inst28;
+
+    inst26.opcode = 3;
+    inst26.add1 = 0;
+    inst26.add2 = 0;
+    inst26.add3 = -1;
+
+    inst27.opcode = 5;
+    inst27.add1 = 0;
+    inst27.add2 = -1;
+    inst27.add3 = -1;
+
+    inst28.opcode = -1;
+    inst28.add1 = -1;
+    inst28.add2 = -1;
+    inst28.add3 = -1;
+
+    trecho4[0] = inst26;
+    trecho4[1] = inst27;
+    trecho4[2] = inst28;
+
+    setPrograma(cpu, trecho4);
+    iniciar(cpu, ram);
+
+    Instrucao inst29;
+    inst29.add2 = cpu->programa[1].add2;
 
     free(ram->memoria);
 
-    programaMultiplica(ram, cpu, inst10.add1, inst8.add1);
+    programaMultiplica(ram, cpu, inst29.add2, inst24.add2);
 
-    Instrucao inst11;
-    inst11.add1 = getDado(ram, 0);
+    Instrucao trecho5[3];
+    Instrucao inst30, inst31, inst32;
+
+    inst30.opcode = 3;
+    inst30.add1 = 0;
+    inst30.add2 = 0;
+    inst30.add3 = -1;
+
+    inst31.opcode = 5;
+    inst31.add1 = 0;
+    inst31.add2 = -1;
+    inst31.add3 = -1;
+
+    inst32.opcode = -1;
+    inst32.add1 = -1;
+    inst32.add2 = -1;
+    inst32.add3 = -1;
+
+    trecho5[0] = inst30;
+    trecho5[1] = inst31;
+    trecho5[2] = inst32;
+
+    setPrograma(cpu, trecho5);
+    iniciar(cpu, ram);
+
+    Instrucao inst33;
+    inst33.add2 = cpu->programa[1].add2;
 
     free(ram->memoria);
 
-    programaMultiplica(ram, cpu, inst11.add1, inst9.add1);
+    programaMultiplica(ram, cpu, inst33.add2, inst25.add2);
 
-    Instrucao inst12;
-    inst12.add1 = getDado(ram, 0);
+    Instrucao trecho6[3];
+    Instrucao inst34, inst35, inst36;
+
+    inst34.opcode = 3;
+    inst34.add1 = 0;
+    inst34.add2 = 0;
+    inst34.add3 = -1;
+
+    inst35.opcode = 5;
+    inst35.add1 = 0;
+    inst35.add2 = -1;
+    inst35.add3 = -1;
+
+    inst30.opcode = -1;
+    inst36.add1 = -1;
+    inst36.add2 = -1;
+    inst36.add3 = -1;
+
+    trecho6[0] = inst34;
+    trecho6[1] = inst35;
+    trecho6[2] = inst36;
+
+    setPrograma(cpu, trecho6);
+    iniciar(cpu, ram);
+
+    Instrucao inst37;
+    inst37.add2 = cpu->programa[1].add2;
+
     free(ram->memoria);
 
-    programaRaizQuadrada(ram, cpu, inst12.add1);
+    programaRaizQuadrada(ram, cpu, inst37.add2);
 
-    Instrucao inst13;
-    inst13.add1 = getDado(ram, 0);
+    Instrucao trecho7[2];
+    Instrucao inst38, inst39;
 
-    printf("\nA area do triangulo eh: %d\n", inst13.add1);
+    inst38.opcode = 3;
+    inst38.add1 = 0;
+    inst38.add2 = 0;
+    inst38.add3 = -1;
+
+    inst39.opcode = -1;
+    inst39.add1 = -1;
+    inst39.add2 = -1;
+    inst39.add3 = -1;
+
+    trecho7[0] = inst38;
+    trecho7[1] = inst39;
+
+    setPrograma(cpu, trecho7);
+    iniciar(cpu, ram);
+
+    printf("\nA area do triangulo eh: %d\n", cpu->registrador1);
 
 }
 
@@ -1231,4 +1835,3 @@ void programaOR(RAM *ram, CPU *cpu, int a, int b)
 }
 
 // Grupo 10 - Otávio Enrique Lopes de Lima, Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes
-

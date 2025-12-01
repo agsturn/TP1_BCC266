@@ -26,7 +26,7 @@ void programaPotencia(RAM *ram, CPU *cpu, int base, int expoente);
 void programaFibonacci(RAM *ram, CPU *cpu, int n);
 void programaCapslock(RAM *ram, CPU *cpu, char *texto);
 void programaMedia(RAM *ram, CPU *cpu, int tamanhoVetor);
-void programaPorcentagem(RAM *ram, CPU *cpu, int valor, int porcentagem);
+void programaPorcentagem(RAM *ram, CPU *cpu, int porcentagem, int valor);
 void programaMdc(RAM *ram, CPU *cpu, int a, int b);
 void programaMmc(RAM *ram, CPU *cpu, int a, int b);
 void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c);
@@ -77,7 +77,7 @@ int main() {
     // programaMedia(&ram, &cpu, 5);
 
     // Executa um exemplo de porcentagem
-    // programaPorcentagem(&ram, &cpu, 200, 50);
+    // programaPorcentagem(&ram, &cpu, 10, 100);
 
     //Executa um exemplo de mdc
     // deu merda programaMdc(&ram,&cpu, 36,44);
@@ -92,7 +92,7 @@ int main() {
     // programaSomaTres(&ram, &cpu, 1, 2, 3);
 
     //Calcula a área de um triângulo a partir da fórmula de Heron a partir do comprimento dos lados
-    programaFormulaHeron(&ram, &cpu, 3, 4, 5);
+     programaFormulaHeron(&ram, &cpu, 3, 4, 5);
 
     // Executa um exemplo da função OR
     // programaOR(&ram, &cpu, 0, 1);
@@ -1030,10 +1030,10 @@ void programaCapslock(RAM *ram, CPU *cpu, char *texto) {
 
 // Executa a média de valores gerados aleatoriamente em um vetor 
 void programaMedia(RAM *ram, CPU *cpu, int tamanhoVetor){
-    criarRAM_aleatoria(ram, tamanhoVetor + 4);
+    criarRAM_aleatoria(ram, tamanhoVetor);
 
-    Instrucao trecho1[2], inst1, inst2;
-    setDado(ram, 0, 0);
+    Instrucao trecho1[2];
+    Instrucao inst1, inst2;
     
     inst2.opcode = -1;
     inst2.add1 = -1;
@@ -1041,7 +1041,7 @@ void programaMedia(RAM *ram, CPU *cpu, int tamanhoVetor){
     inst2.add3 = -1;
     trecho1[1] = inst2;
 
-    for(int i = 4; i < tamanhoVetor + 4; i++){
+    for(int i = 1; i < tamanhoVetor; i++){
         inst1.opcode = 0;
         inst1.add1 = 0;
         inst1.add2 = i;
@@ -1051,62 +1051,49 @@ void programaMedia(RAM *ram, CPU *cpu, int tamanhoVetor){
         iniciar(cpu, ram);
     }
 
-    setDado(ram, 1, tamanhoVetor);
-    setDado(ram, 2, 0);
-    setDado(ram, 3, 1);
-
     Instrucao trecho2[3];
-    Instrucao inst3, inst4, inst5;
+    Instrucao inst3, inst4;
 
-    inst3.opcode = 1;
+    inst3.opcode = 5;
     inst3.add1 = 0;
-    inst3.add2 = 1;
-    inst3.add3 = 0;
+    inst3.add2 = 0;
+    inst3.add3 = -1;
 
-    inst4.opcode = 0;
-    inst4.add1 = 2;
-    inst4.add2 = 3;
-    inst4.add3 = 2;
-
-    inst5.opcode = -1;
-    inst5.add1 = -1;
-    inst5.add2 = -1;
-    inst5.add3 = -1;
+    inst4.opcode = -1;
+    inst4.add1 = -1;
+    inst4.add2 = -1;
+    inst4.add3 = -1;
 
     trecho2[0] = inst3;
     trecho2[1] = inst4;
-    trecho2[2] = inst5;
 
-    while(getDado(ram, trecho2[0].add1) >= getDado(ram, trecho2[0].add2)){
-        setPrograma(cpu, trecho2);
-        iniciar(cpu, ram);
-    }
+    setPrograma(cpu, trecho2);
+    iniciar(cpu, ram);
 
-    Instrucao inst6;
-    inst6.add1 = getDado(ram, trecho2[1].add3);
+    free(ram->memoria);
 
-    printf("\nA média eh: %d\n", inst6.add1);
+    Instrucao inst5;
+
+    inst5.add2 = cpu->programa[0].add2;
+
+    programaDivide(ram, cpu, inst5.add2, tamanhoVetor);
+
+    printf("\nA media eh: %d\n", cpu->registrador1);
 
 }
 
-void programaPorcentagem(RAM *ram, CPU *cpu, int valor, int porcentagem){
+void programaPorcentagem(RAM *ram, CPU *cpu, int porcentagem, int valor){
 
-    criarRAM_vazia(ram, 5);
-
-    Instrucao inst0;
-
-    inst0.add1 = valor;
-    
-    setDado(ram, 0, 0);
-    setDado(ram, 1, porcentagem);
+    programaMultiplica(ram, cpu, porcentagem, valor);
+    free(ram->memoria);
 
     Instrucao trecho1[2];
     Instrucao inst1, inst2;
 
-    inst1.opcode = 0;
+    inst1.opcode = 5;
     inst1.add1 = 0;
-    inst1.add2 = 1;
-    inst1.add3 = 0;
+    inst1.add2 = -1;
+    inst1.add3 = -1;
 
     inst2.opcode = -1;
     inst2.add1 = -1;
@@ -1116,49 +1103,16 @@ void programaPorcentagem(RAM *ram, CPU *cpu, int valor, int porcentagem){
     trecho1[0] = inst1;
     trecho1[1] = inst2;
 
-    for(int i = 0; i < valor; i++){
-        setPrograma(cpu, trecho1);
-        iniciar(cpu, ram);
-    }
+    setPrograma(cpu, trecho1);
+    iniciar(cpu, ram);
 
-    printf("Multiplicação: %d", getDado(ram, inst1.add3));
+    Instrucao inst3;
 
-    setDado(ram, 2, 100);
-    setDado(ram, 3, 0);
-    setDado(ram, 4, 1);
+    inst3.add2 = cpu->programa[0].add2;
 
-    Instrucao trecho2[3];
-    Instrucao inst3, inst4, inst5;
+    programaDivide(ram, cpu, inst3.add2, 100);
 
-    inst3.opcode = 1;
-    inst3.add1 = 0;
-    inst3.add2 = 2;
-    inst3.add3 = 0;
-
-    inst4.opcode = 0;
-    inst4.add1 = 3;
-    inst4.add2 = 4;
-    inst4.add3 = 3;
-
-    inst5.opcode = -1;
-    inst5.add1 = -1;
-    inst5.add2 = -1;
-    inst5.add3 = -1;
-
-    trecho2[0] = inst3;
-    trecho2[1] = inst4;
-    trecho2[2] = inst5;
-
-    while(getDado(ram, trecho2[0].add1) >= getDado(ram, trecho2[0].add2)){
-        setPrograma(cpu, trecho2);
-        iniciar(cpu, ram);
-    }
-
-    Instrucao inst6, inst7;
-    inst6.add1 = getDado(ram, trecho2[1].add3);
-    inst7.add1 = getDado(ram, 1);
-
-    printf("%d%% de %d é igual a %d", inst7.add1, inst0.add1, inst6.add1);
+    printf("%d%% de %d eh igual a %d", porcentagem, valor, cpu->registrador1);
 
 }
 
@@ -1533,15 +1487,17 @@ void programaSomaTres(RAM * ram, CPU *cpu, int a, int b, int c){
 
 void programaFormulaHeron(RAM *ram, CPU *cpu, int a, int b, int c){
 
-    //Calculando o semi-perímetro
+    // Calculando o perímetro
     programaSomaTres(ram, cpu, a, b, c);
     free(ram->memoria);
 
+    // Calculando o semi-perímetro
     programaDivide(ram, cpu, cpu->registrador1, 2);
 
     Instrucao trecho1[8];
     Instrucao inst1, inst2, inst3, inst4, inst5, inst6, inst7, inst8;
 
+    // Passando para a ram os valores do semi-perímetro e dos lados
     inst1.opcode = 2;
     inst1.add1 = 0;
     inst1.add2 = 0;
@@ -1597,6 +1553,7 @@ void programaFormulaHeron(RAM *ram, CPU *cpu, int a, int b, int c){
     Instrucao trecho2[4];
     Instrucao  inst9, inst10, inst11, inst12;
 
+    // Calculando (p - a), (p - b) e (p - c)
     inst9.opcode = 1;
     inst9.add1 = 0;
     inst9.add2 = 1;
@@ -1628,6 +1585,7 @@ void programaFormulaHeron(RAM *ram, CPU *cpu, int a, int b, int c){
     Instrucao trecho3[9];
     Instrucao inst13, inst14, inst15, inst16, inst17, inst18, inst19, inst20, inst21;
 
+    // Copiando os valores p, (p - a), (p - b) e (p - c)
     inst13.opcode = 3;
     inst13.add1 = 0;
     inst13.add2 = 0;
@@ -1695,7 +1653,8 @@ void programaFormulaHeron(RAM *ram, CPU *cpu, int a, int b, int c){
 
     free(ram->memoria);
 
-    programaMultiplica(ram, cpu, inst23.add2, inst22.add2);
+    // Fazendo p * (p - a)
+    programaMultiplica(ram, cpu, inst22.add2, inst23.add2);
 
     Instrucao trecho4[3];
     Instrucao inst26, inst27, inst28;
@@ -1727,6 +1686,7 @@ void programaFormulaHeron(RAM *ram, CPU *cpu, int a, int b, int c){
 
     free(ram->memoria);
 
+    // Fazendo resultado anterior * (p - b)
     programaMultiplica(ram, cpu, inst29.add2, inst24.add2);
 
     Instrucao trecho5[3];
@@ -1759,6 +1719,7 @@ void programaFormulaHeron(RAM *ram, CPU *cpu, int a, int b, int c){
 
     free(ram->memoria);
 
+    // Fazendo resultado anterior * (p - c)
     programaMultiplica(ram, cpu, inst33.add2, inst25.add2);
 
     Instrucao trecho6[3];
@@ -1791,6 +1752,7 @@ void programaFormulaHeron(RAM *ram, CPU *cpu, int a, int b, int c){
 
     free(ram->memoria);
 
+    // Calculando a raiz quadrada
     programaRaizQuadrada(ram, cpu, inst37.add2);
 
     Instrucao trecho7[2];
@@ -1884,5 +1846,4 @@ void programaOR(RAM *ram, CPU *cpu, int a, int b)
 }
 
 // Grupo 10 - Otávio Enrique Lopes de Lima, Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes
-
 

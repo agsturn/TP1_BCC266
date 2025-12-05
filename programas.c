@@ -71,7 +71,9 @@ int main() {
     //programaFibonacci(&ram, &cpu, 8);
     
     // Executa um exemplo de capslock
-    // programaCapslock(&ram, &cpu, "eXemPLo");
+    RAM ramcaps;
+    criarRAM_vazia(&ramcaps, strlen("eXemPLo") + 1);
+    programaCapslock(&ramcaps, &cpu, "eXemPLo");
 
     // Executa a média de valores gerados aleatoriamente em um vetor 
     // programaMedia(&ram, &cpu, 5);
@@ -92,7 +94,7 @@ int main() {
     // programaSomaTres(&ram, &cpu, 1, 2, 3);
 
     //Calcula a área de um triângulo a partir da fórmula de Heron a partir do comprimento dos lados
-     programaFormulaHeron(&ram, &cpu, 3, 4, 5);
+     // programaFormulaHeron(&ram, &cpu, 3, 4, 5);
 
     // Executa um exemplo da função OR
     // programaOR(&ram, &cpu, 0, 1);
@@ -981,51 +983,104 @@ void programaFibonacci(RAM *ram, CPU *cpu, int n) {
 // converte uma string para letras maiúsculas usando opcode sub
 void programaCapslock(RAM *ram, CPU *cpu, char *texto) {
 
-    int n = strlen(texto);
+int n = strlen(texto);  
 
-    // ram layout:
-    // [0 .. n-1] -> texto original
-    // [n]        -> valor 32 (diferença entre 'a' e 'a')
+// 1) Carregar cada caractere na RAM usando apenas opcodes  
+for (int i = 0; i < n; i++) {  
 
-    criarRAM_vazia(ram, n + 1);
+    Instrucao progLoad[3];  
 
-    // copiar string para a ram usando setDado
-    for (int i = 0; i < n; i++) {
-        setDado(ram, i, (int)texto[i]);
-    }
+    // Carrega caractere no registrador1  
+    progLoad[0].opcode = 4;  
+    progLoad[0].add1 = 0;  
+    progLoad[0].add2 = texto[i];  
+    progLoad[0].add3 = -1;  
 
-    // guardar valor fixo 32
-    setDado(ram, n, 32);
+    // Salva registrador1 na RAM[i]  
+    progLoad[1].opcode = 2;  
+    progLoad[1].add1 = 0;  
+    progLoad[1].add2 = i;  
+    progLoad[1].add3 = -1;  
 
-    // criar instruções
-    Instrucao inst[2];
+    progLoad[2].opcode = -1;  
 
-    inst[0].opcode = 1;   // sub opcode
-    inst[1].opcode = -1;  // halt (ajuste conforme seu cpu)
+    setPrograma(cpu, progLoad);  
+    iniciar(cpu, ram);  
+}  
 
-    // percorrer ram em busca de letras minúsculas
-    for (int i = 0; i < n; i++) {
+// 2) Guardar valor 32 na RAM[n] (diferença entre 'a' e 'A')  
+Instrucao prog32[3];  
 
-        int c = getDado(ram, i);
+prog32[0].opcode = 4;  
+prog32[0].add1 = 0;  
+prog32[0].add2 = 32;  
+prog32[0].add3 = -1;  
 
-        // se for minúscula, converte
-        if (c >= 'a' && c <= 'z') {
+prog32[1].opcode = 2;  
+prog32[1].add1 = 0;  
+prog32[1].add2 = n;  
+prog32[1].add3 = -1;  
 
-            inst[0].add1 = i;  // endereço do caractere
-            inst[0].add2 = n;  // endereço contendo 32
-            inst[0].add3 = i;  // resultado volta no mesmo endereço
+prog32[2].opcode = -1;  
 
-            setPrograma(cpu, inst);
-            iniciar(cpu, ram);
-        }
-    }
+setPrograma(cpu, prog32);  
+iniciar(cpu, ram);  
 
-    // exibe resultado
-    printf("string convertida para capslock: ");
-    for (int i = 0; i < n; i++) {
-        printf("%c", (char)getDado(ram, i));
-    }
-    printf("\n");
+// 3) Converter letras minúsculas em maiúsculas usando SUB  
+for (int i = 0; i < n; i++) {  
+
+    // Ler RAM[i] para o registrador  
+    Instrucao progRead[3];  
+    progRead[0].opcode = 3;  
+    progRead[0].add1 = 0;  
+    progRead[0].add2 = i;  
+    progRead[0].add3 = -1;  
+
+    progRead[1].opcode = -1;  
+
+    setPrograma(cpu, progRead);  
+    iniciar(cpu, ram);  
+
+    int c = cpu->registrador1;  
+
+    if (c >= 'a' && c <= 'z') {  
+
+        Instrucao progCaps[3];  
+
+        progCaps[0].opcode = 1;  
+        progCaps[0].add1 = i;  
+        progCaps[0].add2 = n;  
+        progCaps[0].add3 = i;  
+
+        progCaps[1].opcode = -1;  
+
+        setPrograma(cpu, progCaps);  
+        iniciar(cpu, ram);  
+    }  
+}  
+
+// 4) Ler e imprimir resultado final  
+printf("string convertida para capslock: ");  
+
+for (int i = 0; i < n; i++) {  
+
+    Instrucao progFinal[2];  
+
+    progFinal[0].opcode = 3;  
+    progFinal[0].add1 = 0;  
+    progFinal[0].add2 = i;  
+    progFinal[0].add3 = -1;  
+
+    progFinal[1].opcode = -1;  
+
+    setPrograma(cpu, progFinal);  
+    iniciar(cpu, ram);  
+
+    printf("%c", (char)cpu->registrador1);  
+}  
+
+printf("\n");
+
 }
 
 // Executa a média de valores gerados aleatoriamente em um vetor 
@@ -1846,4 +1901,5 @@ void programaOR(RAM *ram, CPU *cpu, int a, int b)
 }
 
 // Grupo 10 - Otávio Enrique Lopes de Lima, Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes
+
 

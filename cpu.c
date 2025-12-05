@@ -28,10 +28,8 @@ void iniciar(CPU *cpu, RAM *ram) {
         cpu->opcode = inst->opcode;
 
         switch (cpu->opcode) {
-            case -1: // Fim do programa
-                printf("\nFim do programa.\n");
-                imprimir(ram);
-                return;
+           case -1: // Fim do programa
+           return;
 
             case 0: // SOMA
                 cpu->registrador1 = getDado(ram, inst->add1);
@@ -103,5 +101,6 @@ void iniciar(CPU *cpu, RAM *ram) {
 void destruirCPU(CPU* cpu){
     free(cpu);
 }
+
 
 // Grupo 10 - Otávio Enrique Lopes de Lima, Ana Gabriela Gomes Lopes Pereira e Heitor Novais Leite de Menezes
